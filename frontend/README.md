@@ -1,70 +1,123 @@
-# Getting Started with Create React App
+# 프로젝트 구조
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## .storybook
 
-## Available Scripts
+Storybook is configured via a folder, called .storybook which contains various configuration files.
 
-In the project directory, you can run:
+## public
 
-### `yarn start`
+static 파일들을 포함한다. static 파일의 종류는 아래와 같다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- `index.html`
+- javascript library files
+- images
+- 기타 다른 assets
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## src
 
-### `yarn test`
+프로젝트의 소스 코드를 포함한다.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### src/assets
 
-### `yarn build`
+assets 파일들을 포함한다.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- images
+- css & fonts
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### src/components
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+재사용 가능한 컴포넌트를 포함한다.
 
-### `yarn eject`
+각 컴포넌트 폴더에는 component, 테스트, 문서 파일을 포함한다. 예를들어,
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+**Button component**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- Button/Button.tsx
+- Button/Button.style.tsx
+- Button/Button.test.tsx
+- Button/Button.stories.tsx
+- Button/index.tsx
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### src/constants
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+constant 파일을 포함한다.
 
-## Learn More
+- Regex
+- other application generic constant
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### src/helpers
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+재사용 가능한 helper function을 포함한다.
 
-### Code Splitting
+### src/layouts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+It contains the layout components
+layout is the common top wrapper component usually will contain navbar , sidebar and children components
 
-### Analyzing the Bundle Size
+### src/pages
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+It contain the page component.
+Each component can layout component as top wrapper based on the page structure
+Each component exported as default, since lazy loading works with default export
 
-### Making a Progressive Web App
+### src/routes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+It contain the page routes
+Dynamic configuration is best with working with routes
+Usually it have an nested array to render the routes
 
-### Advanced Configuration
+### src/schema
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+It contain the schema files using the yup
+It used with formik for field validation
 
-### Deployment
+### src/service
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+It contain the dynamic http request function using axios
+Axios is a promise-based HTTP Client for node.js and the browser
+Axios can be used for api request cancellation, featured with request and response interceptors.
 
-### `yarn build` fails to minify
+### src/store
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+It contains the redux files like actions, reducers & actionTypes.
+
+#### src/store/actions
+
+It contains the action files. It used to trigger action to update the redux state
+
+#### src/store/reducers
+
+It contains the reducers files, each file will have default export of function and will have various switch cases to update the redux state
+
+#### src/store/actionTypes.tsx
+
+It contains the actionTypes which will be used to configure reducer & actions.
+
+#### src/store/selectors
+
+It contains the selectors functions, refer Reselect for more details
+
+#### src/store/index.tsx
+
+It contain the create store function which returns a store object
+
+### src/styles
+
+It contain the styled components reusable breakpoints file, global styles & theme constant file
+
+### src/App.js
+
+App Component is the main component in React which acts as a container for all other components
+
+### src/config
+
+It contain the config files using the env
+
+### src/index.js
+
+It contain method to render the application into real dom
+
+### src/test.utils.tsx
+
+It contain method to render the jest component file
+This function required since we need to add top wrapper component of react-router, redux & styled-components. Without adding this wrapper component, test cases will not run.
