@@ -18,25 +18,27 @@ class UpbitHandler:
         return self._upbit.get_balance(symbol.upper())
 
     def get_balance_all(self):
-        """내가 가지고 있는 전체 자산을 dictionary로 가지고 온다"""
-        result = {}
+        """내가 가지고 있는 전체 자산을 리스틀 형태로 가지고 온다"""
+        result = []
         for info in self._upbit.get_balances():
             if info['currency'] == 'KRW':
                 krw = float(info['balance'])
-                result['KRW'] = {
+                result.append({
+                    'symbol': 'KRW',
                     'balance': krw,
                     'locked': float(info['locked']),
                     'avg_symbol_price': krw,
                     'avg_krw_price': krw
-                }
+                })
             else:
                 symbol = '{}-{}'.format(info['unit_currency'], info['currency']).upper()
-                result[symbol] = {
+                result.append({
+                    'symbol': symbol,
                     'balance': float(info['balance']),
                     'locked': float(info['locked']),
                     'avg_symbol_price': float(info['avg_buy_price']),
                     'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
-                }
+                })
         return result
 
     def get_current_price(self, symbol):
