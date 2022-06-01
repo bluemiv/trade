@@ -3,3 +3,5 @@
 .DS_store
 
 config.json
+
+__pycache__
