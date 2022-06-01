@@ -15,6 +15,6 @@ import upbit.handler as upbit_handler
 if __name__ == '__main__':
     config = config_handler.get_config()
     upbit = upbit_handler.UpbitHandler(config['access_key'], config['secret_key'])
-    print(upbit.get_balance('KRW'))
-    print(upbit.get_current_price('KRW-BTC'))
-    print(upbit.get_current_price_all(['KRW-BTC', 'KRW-XRP']))
+    print(upbit.get_balance_all())
+    # print(upbit.get_current_price('KRW-BTC'))
+    # print(upbit.get_current_price_all(['KRW-BTC', 'KRW-XRP']))

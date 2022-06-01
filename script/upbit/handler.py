@@ -17,6 +17,28 @@ class UpbitHandler:
         self._check_symbol(symbol)
         return self._upbit.get_balance(symbol.upper())
 
+    def get_balance_all(self):
+        """내가 가지고 있는 전체 자산을 dictionary로 가지고 온다"""
+        result = {}
+        for info in self._upbit.get_balances():
+            if info['currency'] == 'KRW':
+                krw = float(info['balance'])
+                result['KRW'] = {
+                    'balance': krw,
+                    'locked': float(info['locked']),
+                    'avg_symbol_price': krw,
+                    'avg_krw_price': krw
+                }
+            else:
+                symbol = '{}-{}'.format(info['unit_currency'], info['currency']).upper()
+                result[symbol] = {
+                    'balance': float(info['balance']),
+                    'locked': float(info['locked']),
+                    'avg_symbol_price': float(info['avg_buy_price']),
+                    'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
+                }
+        return result
+
     def get_current_price(self, symbol):
         """특정 symbol의 현재 시장의 가격을 가지고 온다"""
         self._check_symbol(symbol)
