@@ -57,7 +57,7 @@ class UpbitHandler:
             current_price = self.get_current_price(currency)
             rate = self.get_rate(current_price, ma)
 
-            if rate >= -5 and rate <= 3:
+            if rate >= -10 and rate <= 5:
                 print("트레이딩 후보 currency: {} / rate: {:f}%".format(currency, rate))
                 result.append(currency)
 

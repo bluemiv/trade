@@ -22,7 +22,7 @@ class InstallmentPurchase:
         now = datetime.datetime.now()
         print("{:<20}\t{:<11}\t{}".format(str(now).split(".")[0], currency, message))
 
-    @infinity_trade(timer=10 * 60)
+    @infinity_trade(timer=8 * 60)
     def run(self):
         # 현재 자산 조회
         my_currency_list = self._upbit.valid_currency_filter(self._upbit.get_my_currency_list())
@@ -36,15 +36,16 @@ class InstallmentPurchase:
         delay = 10 / len(my_currency_list)
         print(currency_list, delay)
 
-        for currency in my_currency_list:
+        for currency in currency_list:
             my_account_info = self._upbit.get_balance(currency)
-            balance = my_account_info['balance']
 
             # 처음 매수
-            if balance == 0:
+            if my_account_info is None:
                 self.log(currency, '이평선 부근으로 매수 진행')
                 self._upbit.buy_market(currency, self._init_krw)
                 continue
+
+            balance = my_account_info['balance']
 
             avg_currency_price = my_account_info['avg_currency_price']
 
