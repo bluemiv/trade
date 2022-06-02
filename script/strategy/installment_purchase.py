@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
 
-'''
-[분할매수/전량매도]
-'''
-
 import datetime
 import time
 
@@ -30,11 +26,26 @@ class InstallmentPurchase:
     def run(self):
         # 현재 자산 조회
         my_currency_list = self._upbit.valid_currency_filter(self._upbit.get_my_currency_list())
+        target_currency_list = self._upbit.get_target_currency()
+
+        currency_list = []
+        currency_list.extend(my_currency_list)
+        currency_list.extend(target_currency_list)
+        currency_list = list(set(currency_list))
+
         delay = 10 / len(my_currency_list)
+        print(currency_list, delay)
 
         for currency in my_currency_list:
             my_account_info = self._upbit.get_balance(currency)
             balance = my_account_info['balance']
+
+            # 처음 매수
+            if balance == 0:
+                self.log(currency, '이평선 부근으로 매수 진행')
+                self._upbit.buy_market(currency, self._init_krw)
+                continue
+
             avg_currency_price = my_account_info['avg_currency_price']
 
             current_market_price = self._upbit.get_current_price(currency)

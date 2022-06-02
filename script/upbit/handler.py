@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import time
+
 import pyupbit
 
 
@@ -35,6 +37,42 @@ class UpbitHandler:
             'avg_currency_price': float(info['avg_buy_price']),
             'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
         }
+
+    def get_day_ma(self, currency, count=20):
+        """이동평균선을 구한다
+
+        Args:
+            count: 이동평균선을 계산할 일 수
+        """
+        df = pyupbit.get_ohlcv(currency, count=count, interval='day')
+        return df['close'].rolling(window=count, min_periods=1).mean().iloc[-1]
+
+    def get_target_currency(self):
+        """트레이딩을 할 currency를 가져온다.
+        이동평균선 근처에 있는 currency를 필터링"""
+        result = []
+
+        for currency in self.get_tickers():
+            ma = self.get_day_ma(currency)
+            current_price = self.get_current_price(currency)
+            rate = self.get_rate(current_price, ma)
+
+            if rate >= -3 or rate <= 2:
+                print("트레이딩 후보 currency: {}".format(currency))
+                result.append(currency)
+
+            time.sleep(0.2)
+
+        return result
+
+    def get_tickers(self, without_krw=True, only_krw_market=True):
+        """현재 upbit에 상장된 모든 currency 정보를 가지고 온다"""
+        currency_list = self._tickers
+        if without_krw:
+            currency_list = list(filter(lambda x: x != 'KRW', currency_list))
+        if only_krw_market:
+            currency_list = list(filter(lambda x: x.startswith('KRW'), currency_list))
+        return currency_list
 
     def valid_currency_filter(self, currency_list):
         """상장된 코인 또는 올바른 코인 currency만 필터링한다"""
