@@ -24,7 +24,7 @@ class InstallmentPurchase:
 
     def log(self, currency, message):
         now = datetime.datetime.now()
-        print("{}\t{:<10}\t{}".format(now, currency, message))
+        print("{:<20}\t{:<11}\t{}".format(str(now).split(".")[0], currency, message))
 
     @infinity_trade(timer=10 * 60)
     def run(self):
@@ -42,14 +42,14 @@ class InstallmentPurchase:
 
             self.log(currency, '{:f}%'.format(rate))
 
-            # 3% 이상일때는 전량 매도
+            # 일정 퍼센트 이상일때는 전량 매도
             if rate >= self._sell_rate:
                 self.log(currency, '{}% 이상으로 이익 실현. 전량 매도 진행. rate: {} / balance: {}'.format(
                     self._sell_rate, rate, balance
                 ))
                 self._upbit.sell_market(currency, balance)
 
-            # -5% 이하 일때는 추가 매수
+            # 일정 퍼센트 이하 일때는 추가 매수
             if rate <= self._buy_rate:
                 self.log(currency, '{}% 이하로 손실중. 추가 매수 진행. rate: {}'.format(self._buy_rate, rate))
                 self._upbit.buy_market(currency, self._init_krw)
