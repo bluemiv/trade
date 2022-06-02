@@ -2,6 +2,7 @@
 
 import pyupbit
 
+
 class UpbitHandler:
     def __init__(self, access_key, secret_key):
         self._upbit = pyupbit.Upbit(access_key, secret_key)
@@ -9,51 +10,128 @@ class UpbitHandler:
         self._tickers = pyupbit.get_tickers()
         self._tickers.append('KRW')
 
-    def _check_symbol(self, symbol):
-        assert symbol.upper() in self._tickers, "Invalid symbol. symbol: {}".format(symbol)
+        self._minium_price = int(5000 * 1.01)
 
-    def get_balance(self, symbol):
-        """내가 가지고 있는 자산의 balance를 가지고 온다"""
-        self._check_symbol(symbol)
-        return self._upbit.get_balance(symbol.upper())
+    def _check_valid_currency(self, currency):
+        """upbit에 상장된 올바른 currency인지 확인"""
+        assert currency.upper() in self._tickers, "Invalid currency. currency: {}".format(currency)
+
+    def _custom_balance_filter(self, info):
+        """balance 정보를 사용하기 좋게 필터링"""
+        if info['currency'] == 'KRW':
+            krw = float(info['balance'])
+            return {
+                'currency': 'KRW',
+                'balance': krw,
+                'locked': float(info['locked']),
+                'avg_currency_price': krw,
+                'avg_krw_price': krw
+            }
+        currency = '{}-{}'.format(info['unit_currency'], info['currency']).upper()
+        return {
+            'currency': currency,
+            'balance': float(info['balance']),
+            'locked': float(info['locked']),
+            'avg_currency_price': float(info['avg_buy_price']),
+            'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
+        }
+
+    def get_balance(self, currency):
+        """내가 가지고 있는 자산의 정보를 가지고 온다"""
+        self._check_valid_currency(currency)
+        all = self.get_balance_all()
+        result = list(filter(lambda info: info['currency'] == currency.upper(), all))
+        if len(result) > 0:
+            return result[0]
+        return None
 
     def get_balance_all(self):
         """내가 가지고 있는 전체 자산을 리스틀 형태로 가지고 온다"""
         result = []
         for info in self._upbit.get_balances():
-            if info['currency'] == 'KRW':
-                krw = float(info['balance'])
-                result.append({
-                    'symbol': 'KRW',
-                    'balance': krw,
-                    'locked': float(info['locked']),
-                    'avg_symbol_price': krw,
-                    'avg_krw_price': krw
-                })
-            else:
-                symbol = '{}-{}'.format(info['unit_currency'], info['currency']).upper()
-                result.append({
-                    'symbol': symbol,
-                    'balance': float(info['balance']),
-                    'locked': float(info['locked']),
-                    'avg_symbol_price': float(info['avg_buy_price']),
-                    'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
-                })
+            result.append(self._custom_balance_filter(info))
         return result
 
-    def get_current_price(self, symbol):
-        """특정 symbol의 현재 시장의 가격을 가지고 온다"""
-        self._check_symbol(symbol)
-        return pyupbit.get_current_price(symbol)
+    def get_current_price(self, currency):
+        """특정 currency의 현재 시장의 가격을 가지고 온다"""
+        self._check_valid_currency(currency)
+        return pyupbit.get_current_price(currency)
 
-    def get_current_price_all(self, symbol_list):
-        """symbol 리스트의 현재 시장의 가격을 가지고 온다
+    def get_current_price_all(self, currency_list):
+        """currency 리스트의 현재 시장의 가격을 가지고 온다
 
         Args:
-            symbol_list: 조회할 symbol 목록
+            currency_list: 조회할 currency 목록
         """
         result = {}
-        for symbol in symbol_list:
-            _symbol = symbol.upper()
-            result[_symbol] = self.get_current_price(_symbol)
+        for currency in currency_list:
+            _currency = currency.upper()
+            result[_currency] = self.get_current_price(_currency)
         return result
+
+    def buy_limit(self, currency, price, amount):
+        """지정가로 매수한다
+
+        Args:
+            currency: 구매할 currency
+            price: 지정가 매수 금액 (KRW 가 아닌 코인 금액)
+            amount: 구매할 코인의 개수
+        """
+        self._check_valid_currency(currency)
+        assert amount > 0, "Invalid amount. amount: {}".format(amount)
+        assert price > 0, "Invalid price. price: {}".format(price)
+
+        assert price * amount > self._minium_price, "Greater than {}WON. price: {}, amount: {}".format(
+            self._minium_price, price, amount
+        )
+
+        # Response Data
+        # {'uuid': '0a9e4c4f-83ed-442f-9390-1ef94f5f7f2a', 'side': 'bid', 'ord_type': 'limit', 'price': '10.0',
+        #  'state': 'wait', 'market': 'KRW-XRP', 'created_at': '2022-06-02T18:28:44+09:00', 'volume': '1000.0',
+        #  'remaining_volume': '1000.0', 'reserved_fee': '5.0', 'remaining_fee': '5.0', 'paid_fee': '0.0',
+        #  'locked': '10005.0', 'executed_volume': '0.0', 'trades_count': 0}
+        return self._upbit.buy_limit_order(currency, price, amount)
+
+    def sell_limit(self, currency, price, amount):
+        """지정가로 매도한다
+
+        Args:
+            currency: 매도할 currency
+            price: 지정가 매도 금액 (KRW 가 아닌 코인 금액)
+            amount: 매도할 코인의 개수
+        """
+        self._check_valid_currency(currency)
+        assert amount > 0, "Invalid amount. amount: {}".format(amount)
+        assert price > 0, "Invalid price. price: {}".format(price)
+
+        assert price * amount > self._minium_price, "Greater than {}WON. price: {}, amount: {}".format(
+            self._minium_price, price, amount
+        )
+
+        return self._upbit.sell_limit_order(currency, price, amount)
+
+    def buy_market(self, currency, price):
+        """시장가로 매수한다
+
+        Args:
+            currency: 매수할 currency
+            price: 매수할 KRW 금액 (코인 금액이 아닌, KRW 금액)
+        """
+        _currency = currency.upper()
+        self._check_valid_currency(_currency)
+        assert price > self._minium_price, "Greater than {}WON. price: {}".format(self._minium_price, price)
+
+        return self._upbit.buy_market_order(_currency, price)
+
+    def sell_market(self, currency, amount):
+        """시장가로 매도한다
+
+        Args:
+            currency: 매도할 currency
+            amount: 매도할 KRW 금액 (코인 금액이 아닌, KRW 금액)
+        """
+        _currency = currency.upper()
+        self._check_valid_currency(_currency)
+        assert amount > 0, "Invalid amount. amount: {}".format(amount)
+
+        return self._upbit.sell_market_order(_currency, amount)
