@@ -8,13 +8,8 @@
  - 15분 간격으로 배치 실행
 '''
 
-import upbit.handler as upbit_handler
-import utils.config as config_handler
+from strategy.installment_purchase import InstallmentPurchase
 
 if __name__ == '__main__':
-    config = config_handler.get_config()
-    upbit = upbit_handler.UpbitHandler(config['access_key'], config['secret_key'])
-    print(upbit.get_balance_all())
-    print(upbit.get_balance('KRW-MLK'))
-    print(upbit.get_current_price('KRW-BTC'))
-    print(upbit.get_current_price_all(['KRW-BTC', 'KRW-XRP']))
+    installmentPurchase = InstallmentPurchase()
+    installmentPurchase.run()

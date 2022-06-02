@@ -36,6 +36,10 @@ class UpbitHandler:
             'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
         }
 
+    def valid_currency_filter(self, currency_list):
+        """상장된 코인 또는 올바른 코인 currency만 필터링한다"""
+        return list(filter(lambda x: x in self._tickers, currency_list))
+
     def get_balance(self, currency):
         """내가 가지고 있는 자산의 정보를 가지고 온다"""
         self._check_valid_currency(currency)
@@ -51,6 +55,15 @@ class UpbitHandler:
         for info in self._upbit.get_balances():
             result.append(self._custom_balance_filter(info))
         return result
+
+    def get_my_currency_list(self, without_krw=True, only_krw_market=True):
+        """내가 가지고 있는 자산의 currency 목록을 조회한다"""
+        currency_list = list(map(lambda x: x['currency'], self.get_balance_all()))
+        if without_krw:
+            currency_list = list(filter(lambda x: x != 'KRW', currency_list))
+        if only_krw_market:
+            currency_list = list(filter(lambda x: x.startswith('KRW'), currency_list))
+        return currency_list
 
     def get_current_price(self, currency):
         """특정 currency의 현재 시장의 가격을 가지고 온다"""
@@ -135,3 +148,12 @@ class UpbitHandler:
         assert amount > 0, "Invalid amount. amount: {}".format(amount)
 
         return self._upbit.sell_market_order(_currency, amount)
+
+    def get_rate(self, market, coin_price):
+        """수익률을 가지고 온다
+
+        Args:
+            market: 현재 시장의 가격
+            coin_price: 내 코인 가격
+        """
+        return (market - coin_price) / coin_price * 100
