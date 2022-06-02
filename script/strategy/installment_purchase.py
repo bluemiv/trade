@@ -9,11 +9,13 @@ from utils.deco import infinity_trade
 
 
 class InstallmentPurchase:
-    def __init__(self, init_krw=10000, sell_rate=3, buy_rate=-5):
+    def __init__(self, init_krw=10000, sell_rate=3, buy_rate=-5, black_list=[]):
         self._init_krw = init_krw
 
         self._sell_rate = sell_rate if sell_rate > 0 else sell_rate * -1
         self._buy_rate = buy_rate if buy_rate < 0 else buy_rate * -1
+
+        self._black_list = black_list
 
         _config = config.get_config()
         self._upbit = UpbitHandler(_config['access_key'], _config['secret_key'])
@@ -32,6 +34,7 @@ class InstallmentPurchase:
         currency_list.extend(my_currency_list)
         currency_list.extend(target_currency_list)
         currency_list = list(set(currency_list))
+        currency_list = list(filter(lambda x: x not in self._black_list, currency_list))
 
         delay = 10 / len(my_currency_list)
         print(currency_list, delay)
