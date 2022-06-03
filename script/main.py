@@ -3,5 +3,6 @@
 from strategy.installment_purchase import InstallmentPurchase
 
 if __name__ == '__main__':
-    installmentPurchase = InstallmentPurchase(black_list=['KRW-BTT'])
+    black_list = ['KRW-BTT', 'KRW-NU', 'KRW-LTC', 'KRW-XEM']
+    installmentPurchase = InstallmentPurchase(black_list=black_list)
     installmentPurchase.run()

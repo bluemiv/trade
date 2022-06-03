@@ -37,7 +37,6 @@ class InstallmentPurchase:
         currency_list = list(filter(lambda x: x not in self._black_list, currency_list))
 
         delay = 10 / len(my_currency_list)
-        print(currency_list, delay)
 
         for currency in currency_list:
             my_account_info = self._upbit.get_balance(currency)
