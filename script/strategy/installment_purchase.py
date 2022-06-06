@@ -9,16 +9,31 @@ from utils.deco import infinity_trade
 
 
 class InstallmentPurchase:
-    def __init__(self, init_krw=10000, sell_rate=3, buy_rate=-5, black_list=[]):
-        self._init_krw = init_krw
+    def __init__(self, init_krw=None, sell_rate=3, buy_rate=-5, black_list=[]):
+        _config = config.get_config()
+        self._upbit = UpbitHandler(_config['access_key'], _config['secret_key'])
+
+        self._init_krw = self._get_init_krw(init_krw)
+        print("매수 금액:", self._init_krw)
 
         self._sell_rate = sell_rate if sell_rate > 0 else sell_rate * -1
         self._buy_rate = buy_rate if buy_rate < 0 else buy_rate * -1
 
         self._black_list = black_list
 
-        _config = config.get_config()
-        self._upbit = UpbitHandler(_config['access_key'], _config['secret_key'])
+    def _get_init_krw(self, init_krw):
+        """매수 금액을 설정한다"""
+        min_krw = 10000
+        max_krw = 50000
+        if init_krw is None:
+            result = int(self._upbit.get_my_total_krw() / 500)
+            if result < min_krw:
+                result = min_krw
+            if result > max_krw:
+                result = max_krw
+        else:
+            result = init_krw
+        return int(result)
 
     def log(self, currency, message):
         now = datetime.datetime.now()

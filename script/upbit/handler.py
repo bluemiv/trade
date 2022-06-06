@@ -95,6 +95,12 @@ class UpbitHandler:
             result.append(self._custom_balance_filter(info))
         return result
 
+    def get_my_total_krw(self):
+        """내 전체 자산을 조회한다"""
+        return sum(
+            list(map(lambda x: x['avg_krw_price'] + x['locked'] * x['avg_currency_price'], self.get_balance_all()))
+        )
+
     def get_my_currency_list(self, without_krw=True, only_krw_market=True):
         """내가 가지고 있는 자산의 currency 목록을 조회한다"""
         currency_list = list(map(lambda x: x['currency'], self.get_balance_all()))

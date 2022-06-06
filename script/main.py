@@ -25,5 +25,5 @@ if __name__ == '__main__':
     black_list = ['KRW-BTT', 'KRW-NU', 'KRW-LTC', 'KRW-XEM']
 
     if strategy_number == '1':
-        installmentPurchase = InstallmentPurchase(init_krw=10100, black_list=black_list)
+        installmentPurchase = InstallmentPurchase(black_list=black_list)
         installmentPurchase.run()
