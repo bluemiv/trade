@@ -47,9 +47,10 @@ class UpbitHandler:
         df = pyupbit.get_ohlcv(currency, count=count, interval='day')
         return df['close'].rolling(window=count, min_periods=1).mean().iloc[-1]
 
-    def get_target_currency(self):
+    def get_target_currency(self, rate=5):
         """트레이딩을 할 currency를 가져온다.
         이동평균선 근처에 있는 currency를 필터링"""
+        _rate = rate if rate > 0 else rate * -1
         result = []
 
         for currency in self.get_tickers():
@@ -57,7 +58,7 @@ class UpbitHandler:
             current_price = self.get_current_price(currency)
             rate = self.get_rate(current_price, ma)
 
-            if rate >= -10 and rate <= 5:
+            if rate >= -1 * _rate * 2 and rate <= _rate:
                 print("트레이드 대상 currency: {} / rate: {:f}%".format(currency, rate))
                 result.append(currency)
 

@@ -28,7 +28,7 @@ class InstallmentPurchase:
     def run(self):
         # 현재 자산 조회
         my_currency_list = self._upbit.valid_currency_filter(self._upbit.get_my_currency_list())
-        target_currency_list = self._upbit.get_target_currency()
+        target_currency_list = self._upbit.get_target_currency(rate=6)
 
         currency_list = []
         currency_list.extend(my_currency_list)
