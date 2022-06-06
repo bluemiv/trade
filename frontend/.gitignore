@@ -1,12 +1,13 @@
-.idea
-.vscode
-
+# dependencies
 /node_modules
 /.pnp
 .pnp.js
 
 # testing
 /coverage
+
+.idea
+.vs_code
 
 # production
 /build

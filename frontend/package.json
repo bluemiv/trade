@@ -1,15 +1,11 @@
 {
   "name": "gogoose",
-  "private": true,
+  "packageManager": "yarn@3.2.1",
   "workspaces": [
-    "packages/app",
-    "packages/aui"
+    "packages/**"
   ],
   "scripts": {
     "app": "yarn workspace @gogoose/app",
     "ui": "yarn workspace @gogoose/ui"
-  },
-  "version": "1.0.0",
-  "main": "index.js",
-  "license": "MIT"
+  }
 }
