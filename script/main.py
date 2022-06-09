@@ -24,7 +24,7 @@ if __name__ == '__main__':
 
     black_list = [
         'KRW-BTT', 'KRW-NU', 'KRW-LTC',
-        'KRW-XEM', 'KRW-WEMIX', 'KRW-MBL'
+        'KRW-XEM', 'KRW-WEMIX', 'KRW-MBL',
         'KRW-WAVES'
     ]
 
