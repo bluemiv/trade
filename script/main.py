@@ -22,7 +22,11 @@ if __name__ == '__main__':
         else:
             print("Invalid input.")
 
-    black_list = ['KRW-BTT', 'KRW-NU', 'KRW-LTC', 'KRW-XEM', 'KRW-WEMIX', 'KRW-MBL']
+    black_list = [
+        'KRW-BTT', 'KRW-NU', 'KRW-LTC',
+        'KRW-XEM', 'KRW-WEMIX', 'KRW-MBL'
+        'KRW-WAVES'
+    ]
 
     if strategy_number == '1':
         installmentPurchase = InstallmentPurchase(black_list=black_list)
