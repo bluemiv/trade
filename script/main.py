@@ -25,7 +25,7 @@ if __name__ == '__main__':
     black_list = [
         'KRW-BTT', 'KRW-NU', 'KRW-LTC',
         'KRW-XEM', 'KRW-WEMIX', 'KRW-MBL',
-        'KRW-WAVES'
+        'KRW-WAVES', 'KRW-1INCH',
     ]
 
     if strategy_number == '1':
