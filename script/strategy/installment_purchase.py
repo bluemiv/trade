@@ -4,19 +4,30 @@ import datetime
 import time
 
 from upbit.handler import UpbitHandler
-from utils import config
+from utils import config_parser
 from utils.deco import infinity_trade
+
+DEFAULT_OPTIONS = {
+    'disabled_new_buy': False,
+    'disabled_buy': False,
+    'disabled_sell': False,
+}
 
 
 class InstallmentPurchase:
-    def __init__(self, sell_rate=3, buy_rate=-5, black_list=[]):
-        _config = config.get_config()
+    def __init__(self, sell_rate=3, buy_rate=-5, black_list=None, options=None):
+        _config = config_parser.get_config()
         self._upbit = UpbitHandler(_config['access_key'], _config['secret_key'])
 
         self._sell_rate = sell_rate if sell_rate > 0 else sell_rate * -1
         self._buy_rate = buy_rate if buy_rate < 0 else buy_rate * -1
 
-        self._black_list = black_list
+        self._black_list = black_list if black_list is not None else []
+
+        self._options = DEFAULT_OPTIONS
+        if options is not None:
+            for k, v in options.items():
+                self._options[k] = v
 
     def _get_init_krw(self):
         """매수 금액을 설정한다"""
@@ -51,9 +62,11 @@ class InstallmentPurchase:
 
         for currency in currency_list:
             my_account_info = self._upbit.get_balance(currency)
+            if my_account_info is None:
+                continue
 
             # 처음 매수
-            if my_account_info is None:
+            if not self._options['disabled_new_buy'] and my_account_info is None:
                 self.log(currency, '이평선 부근으로 매수 진행')
                 self._upbit.buy_market(currency, self._init_krw)
                 continue
@@ -68,14 +81,14 @@ class InstallmentPurchase:
             self.log(currency, '{:f}%'.format(rate))
 
             # 일정 퍼센트 이상일때는 전량 매도
-            if rate >= self._sell_rate:
+            if not self._options['disabled_sell'] and rate >= self._sell_rate:
                 self.log(currency, '{}% 이상으로 이익 실현. 전량 매도 진행. rate: {} / balance: {}'.format(
                     self._sell_rate, rate, balance
                 ))
                 self._upbit.sell_market(currency, balance)
 
             # 일정 퍼센트 이하 일때는 추가 매수
-            if rate <= self._buy_rate:
+            if not self._options['disabled_buy'] and rate <= self._buy_rate:
                 self.log(currency, '{}% 이하로 손실중. 추가 매수 진행. rate: {}'.format(self._buy_rate, rate))
                 self._upbit.buy_market(currency, self._init_krw)
 

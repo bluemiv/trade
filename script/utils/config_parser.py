@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os
 import json
+import os
 
 
 def get_config(config_path=None):
