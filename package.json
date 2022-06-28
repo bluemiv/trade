@@ -1,0 +1,20 @@
+{
+  "name": "cotra",
+  "packageManager": "yarn@3.2.2",
+  "workspaces": {
+    "packages": [
+      "packages/**"
+    ]
+  },
+  "scripts": {
+    "web": "yarn workspace @cotra/web",
+    "gql": "yarn workspace @cotra/gql",
+    "prettier:web": "yarn prettier --write ./packages/web/src"
+  },
+  "engines": {
+    "node": ">=16.15.1"
+  },
+  "devDependencies": {
+    "prettier": "^2.7.1"
+  }
+}
