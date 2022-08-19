@@ -12,10 +12,10 @@
     "prettier:web": "yarn prettier --write ./packages/web/src",
     "prettier:server": "yarn prettier --write ./packages/server/src"
   },
-  "engines": {
-    "node": ">=16.15.1"
-  },
   "devDependencies": {
     "prettier": "^2.7.1"
+  },
+  "engines": {
+    "node": ">=16.15.1"
   }
 }
