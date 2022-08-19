@@ -1,18 +1,24 @@
-import { Arg, Query, Resolver } from 'type-graphql';
+import { Arg, Mutation, Query, Resolver } from 'type-graphql';
 import { User } from '../entity';
+import { CreateUserInput } from '../inputs';
 
 @Resolver()
 class UserResolver {
     @Query((returns) => User)
-    user(@Arg('id') id: string) {
-        return {
-            id,
-        };
+    async user(@Arg('id') id: string) {
+        return await User.findOneBy({ id });
     }
 
     @Query((returns) => [User])
-    users() {
-        return [];
+    async users() {
+        return await User.find();
+    }
+
+    @Mutation(() => User)
+    async createUser(@Arg('user') user: CreateUserInput) {
+        const createdUser = User.create(user);
+        await createdUser.save();
+        return createdUser;
     }
 }
 

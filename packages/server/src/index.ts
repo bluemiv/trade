@@ -4,8 +4,11 @@ import { ApolloServerPluginDrainHttpServer, ApolloServerPluginLandingPageLocalDe
 import express from 'express';
 import * as http from 'http';
 import schema from './resolver';
+import { PostgresDataSource } from './data-source';
 
 async function startApolloServer(schema) {
+    await PostgresDataSource.initialize();
+
     const app = express();
     const httpServer = http.createServer(app);
     const server = new ApolloServer({
@@ -16,6 +19,7 @@ async function startApolloServer(schema) {
             ApolloServerPluginDrainHttpServer({ httpServer }),
             ApolloServerPluginLandingPageLocalDefault({ embed: true }),
         ],
+        // dataSources: () => ({ db:  }),
     });
 
     await server.start();

@@ -16,6 +16,8 @@
 **/dist
 **/lib
 
+pgdata/
+
 **/.DS_Store
 **/.vs_code
 **/.idea

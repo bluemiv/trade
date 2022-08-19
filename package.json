@@ -10,7 +10,9 @@
     "web": "yarn workspace @cotra/web",
     "server": "yarn workspace @cotra/server",
     "prettier:web": "yarn prettier --write ./packages/web/src",
-    "prettier:server": "yarn prettier --write ./packages/server/src"
+    "prettier:server": "yarn prettier --write ./packages/server/src",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down"
   },
   "devDependencies": {
     "prettier": "^2.7.1"

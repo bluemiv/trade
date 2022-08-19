@@ -1,0 +1,17 @@
+version: '3.4'
+
+services:
+  cotra_db:
+    container_name: "cotra_db"
+    image: postgres
+    ports:
+      - "35432:5432"
+    expose:
+      - "5432"
+    volumes:
+      - "./pgdata:/var/lib/postgresql/data"
+    environment:
+      - "POSTGRES_DB=cotra"
+      - "POSTGRES_USER=postgres"
+      - "POSTGRES_PASSWORD=root"
+      - "PGDATA=/var/lib/postgresql/data/pgdata"

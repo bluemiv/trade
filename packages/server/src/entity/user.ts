@@ -1,24 +1,24 @@
+import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { Field, ID, ObjectType } from 'type-graphql';
 
+@Entity()
 @ObjectType()
-class User {
+class User extends BaseEntity {
+    @PrimaryGeneratedColumn('increment')
     @Field(() => ID)
-    id: number;
+    id: string;
 
-    @Field()
+    @Column()
+    @Field(() => String)
     email: string;
 
-    @Field()
+    @Column()
+    @Field(() => String)
     password: string;
 
-    @Field({ nullable: true })
+    @Column({ nullable: true })
+    @Field(() => String, { nullable: true })
     name: string;
-
-    @Field({ defaultValue: new Date() })
-    createdAt: Date;
-
-    @Field({ defaultValue: new Date() })
-    updatedAt: Date;
 }
 
 export default User;
