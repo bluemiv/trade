@@ -8,8 +8,9 @@
   },
   "scripts": {
     "web": "yarn workspace @cotra/web",
-    "gql": "yarn workspace @cotra/gql",
-    "prettier:web": "yarn prettier --write ./packages/web/src"
+    "server": "yarn workspace @cotra/server",
+    "prettier:web": "yarn prettier --write ./packages/web/src",
+    "prettier:server": "yarn prettier --write ./packages/server/src"
   },
   "engines": {
     "node": ">=16.15.1"
