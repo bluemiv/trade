@@ -1,5 +1,6 @@
 {
   "name": "cotra",
+  "version": "0.1.0",
   "packageManager": "yarn@3.2.2",
   "workspaces": {
     "packages": [
