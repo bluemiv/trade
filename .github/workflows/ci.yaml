@@ -37,6 +37,7 @@ jobs:
 
       - name: Build "web"
         run: |
+          yarn install
           yarn web install
           yarn web build
 
@@ -64,6 +65,7 @@ jobs:
 
       - name: Build "server"
         run: |
+          yarn install
           yarn server install
           yarn server build
 
