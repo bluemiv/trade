@@ -62,6 +62,9 @@ class InstallmentPurchase:
 
         for currency in currency_list:
             my_account_info = self._upbit.get_balance(currency)
+            if my_account_info is None:
+                self.log(currency, '조회할 수 없음')
+                continue
 
             # 처음 매수
             if not self._options['disabled_new_buy'] and my_account_info is None:
