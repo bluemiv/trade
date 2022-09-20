@@ -15,7 +15,7 @@ DEFAULT_OPTIONS = {
 
 
 class InstallmentPurchase:
-    def __init__(self, sell_rate=3, buy_rate=-7.5, black_list=None, options=None):
+    def __init__(self, sell_rate=4, buy_rate=-10, black_list=None, options=None):
         _config = config_parser.get_config()
         self._upbit = UpbitHandler(_config['access_key'], _config['secret_key'])
 
@@ -30,9 +30,9 @@ class InstallmentPurchase:
                 self._options[k] = v
 
     def _get_init_krw(self):
-        """매수 금액을 설정한다"""
-        min_krw, max_krw = (20000, 40000)
-        result = int(self._upbit.get_my_total_krw() / 180)
+        """매수 금액을 설정"""
+        min_krw, max_krw = (6000, 20000)
+        result = self._upbit.get_my_total_krw() / 365
         if result < min_krw:
             result = min_krw
         if result > max_krw:
@@ -58,7 +58,7 @@ class InstallmentPurchase:
         currency_list = list(set(currency_list))
         currency_list = list(filter(lambda x: x not in self._black_list, currency_list))
 
-        delay = 10 / len(my_currency_list)
+        delay = 50 / len(my_currency_list)
 
         for currency in currency_list:
             my_account_info = self._upbit.get_balance(currency)

@@ -31,9 +31,9 @@ if __name__ == '__main__':
         disabled_buy = input(' > 매수 기능 비활성화 (Y: 비활성화 or N: 활성화): ')
         disabled_sell = input(' > 매도 기능 비활성화 (Y: 비활성화 or N: 활성화): ')
         options = {
-            'disabled_new_buy': True if disabled_new_buy in ['y', 'Y'] else False,
-            'disabled_buy': True if disabled_buy in ['y', 'Y'] else False,
-            'disabled_sell': True if disabled_sell in ['y', 'Y'] else False
+            'disabled_new_buy': True if disabled_new_buy.lower() == 'y' else False,
+            'disabled_buy': True if disabled_buy.lower() == 'y' else False,
+            'disabled_sell': True if disabled_sell.lower() == 'y' else False
         }
         installmentPurchase = InstallmentPurchase(black_list=black_list, options=options)
         installmentPurchase.run()
