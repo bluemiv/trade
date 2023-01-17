@@ -97,14 +97,15 @@ class Infinity:
             if rate >= sell_rate:
                 if coin_account['avg_krw_price'] <= self._init_krw:
                     # 전량 매도
-                    half_balance = coin_account['balance'] / 2
                     self.log('{}% 이상으로 이익 실현. 전량 매도 진행. rate: {} / balance: {}'.format(
-                        sell_rate, rate, half_balance
-                    ))
-                    self._upbit.sell_market(self._currency, half_balance)
-                else:
-                    # 절반 매도
-                    self.log('{}% 이상으로 이익 실현. 절반 매도 진행. rate: {} / balance: {}'.format(
                         sell_rate, rate, coin_account['balance']
                     ))
                     self._upbit.sell_market(self._currency, coin_account['balance'])
+
+                else:
+                    # 절반 매도
+                    half_balance = coin_account['balance'] / 2
+                    self.log('{}% 이상으로 이익 실현. 절반 매도 진행. rate: {} / balance: {}'.format(
+                        sell_rate, rate, half_balance
+                    ))
+                    self._upbit.sell_market(self._currency, half_balance)
