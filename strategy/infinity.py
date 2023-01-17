@@ -71,12 +71,12 @@ class Infinity:
         current_price = self._upbit.get_current_price(self._currency)
 
         # 매수 예약
-        not_exists_account = coin_account is None
-        if not_exists_account:
-            start_coin_price = current_price - self._get_price_delta(current_price) * 2
-        else:
+        exists_account = coin_account is not None
+        start_coin_price = current_price - self._get_price_delta(current_price) * 2
+        if exists_account:
             avg_coin_price = coin_account['avg_currency_price']
-            start_coin_price = math.floor(avg_coin_price) - self._get_price_delta(current_price) * 2
+            start_coin_price_from_account = math.floor(avg_coin_price) - self._get_price_delta(current_price) * 2
+            start_coin_price = min(start_coin_price, start_coin_price_from_account)
 
         self.log(f'[매수 예약 진행]')
         for idx in range(10):
@@ -86,9 +86,7 @@ class Infinity:
             time.sleep(0.5)
 
         # 매도
-        if not_exists_account:
-            pass
-        else:
+        if exists_account:
             avg_coin_price = coin_account['avg_currency_price']
 
             # 1.5% 이상일 때 절반 매도
