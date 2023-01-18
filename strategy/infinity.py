@@ -24,15 +24,6 @@ class Infinity:
         self._init_krw = self._options['init_krw']
         self.log(f'Options: {self._options}')
 
-        # self._buy_rate = buy_rate if buy_rate < 0 else buy_rate * -1
-        # 
-        # self._black_list = black_list if black_list is not None else []
-        # 
-        # self._options = DEFAULT_OPTIONS
-        # if options is not None:
-        #     for k, v in options.items():
-        #         self._options[k] = v
-
     def _get_init_krw(self):
         """매수 금액을 설정한다"""
         min_krw, max_krw = (20000, 40000)
@@ -72,28 +63,29 @@ class Infinity:
 
         # 매수 예약
         exists_account = coin_account is not None
-        start_coin_price = current_price - self._get_price_delta(current_price) * 2
+        delta_price = self._get_price_delta(current_price)
+        start_coin_price = current_price - delta_price
         if exists_account:
             avg_coin_price = coin_account['avg_currency_price']
-            start_coin_price_from_account = math.floor(avg_coin_price) - self._get_price_delta(current_price) * 2
+            start_coin_price_from_account = math.floor(avg_coin_price) - delta_price
             start_coin_price = min(start_coin_price, start_coin_price_from_account)
 
         self.log(f'[매수 예약 진행]')
-        for idx in range(10):
-            price = start_coin_price - idx
+        for idx in range(20):
+            price = start_coin_price - idx * delta_price
             self._upbit.buy_limit(self._currency, price, self._init_krw / price)
             self.log(f'>> [매수 예약] coin price: {price}')
-            time.sleep(0.5)
+            time.sleep(0.25)
 
         # 매도
         if exists_account:
             avg_coin_price = coin_account['avg_currency_price']
 
-            # 1.5% 이상일 때 절반 매도
+            # 1.5% 이상일 매도
             sell_rate = 1.5
             rate = self._upbit.get_rate(current_price, avg_coin_price)
             if rate >= sell_rate:
-                if coin_account['avg_krw_price'] <= self._init_krw:
+                if coin_account['avg_krw_price'] / 2 <= self._init_krw:
                     # 전량 매도
                     self.log('{}% 이상으로 이익 실현. 전량 매도 진행. rate: {} / balance: {}'.format(
                         sell_rate, rate, coin_account['balance']
