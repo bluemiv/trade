@@ -52,7 +52,7 @@ class Infinity:
         elif 100000 <= current_price < 1000000:
             return 50
 
-    @decoration.forever(timer=20 * 60)
+    @decoration.forever(timer=10 * 60)
     def run(self):
         # 모든 주문 취소
         self._upbit.cancel_all_order(self._currency)
@@ -64,14 +64,14 @@ class Infinity:
         # 매수 예약
         exists_account = coin_account is not None
         delta_price = self._get_price_delta(current_price)
-        start_coin_price = current_price - delta_price
+        start_coin_price = current_price - delta_price * 2
         if exists_account:
             avg_coin_price = coin_account['avg_currency_price']
-            start_coin_price_from_account = math.floor(avg_coin_price) - delta_price
+            start_coin_price_from_account = math.floor(avg_coin_price) - delta_price * 2
             start_coin_price = min(start_coin_price, start_coin_price_from_account)
 
         self.log(f'[매수 예약 진행]')
-        for idx in range(20):
+        for idx in range(7):
             price = start_coin_price - idx * delta_price
             self._upbit.buy_limit(self._currency, price, self._init_krw / price)
             self.log(f'>> [매수 예약] coin price: {price}')
