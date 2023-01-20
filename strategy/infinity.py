@@ -8,12 +8,6 @@ from upbit import core
 from utils import config_parser
 from utils import decoration
 
-DEFAULT_OPTIONS = {
-    'disabled_new_buy': False,
-    'disabled_buy': False,
-    'disabled_sell': False,
-}
-
 
 class Infinity:
     def __init__(self):
@@ -24,33 +18,9 @@ class Infinity:
         self._init_krw = self._options['init_krw']
         self.log(f'Options: {self._options}')
 
-    def _get_init_krw(self):
-        """매수 금액을 설정한다"""
-        min_krw, max_krw = (20000, 40000)
-        result = int(self._upbit.get_my_total_krw() / 600)
-        if result < min_krw:
-            result = min_krw
-        if result > max_krw:
-            result = max_krw
-        return int(result)
-
     def log(self, message):
         now = datetime.datetime.now()
         print("{:<20}\t{:<11}\t{}".format(str(now).split(".")[0], self._currency, message))
-
-    def _get_price_delta(self, current_price):
-        if 1 <= current_price < 10:
-            return 0.01
-        elif 10 <= current_price < 100:
-            return 0.1
-        elif 100 <= current_price < 1000:
-            return 1
-        elif 1000 <= current_price < 10000:
-            return 5
-        elif 10000 <= current_price < 100000:
-            return 10
-        elif 100000 <= current_price < 1000000:
-            return 50
 
     @decoration.forever(timer=10 * 60)
     def run(self):
@@ -63,7 +33,7 @@ class Infinity:
 
         # 매수 예약
         exists_account = coin_account is not None
-        delta_price = self._get_price_delta(current_price)
+        delta_price = self._upbit.get_price_delta(current_price)
         start_coin_price = current_price - delta_price * 2
         if exists_account:
             avg_coin_price = coin_account['avg_currency_price']

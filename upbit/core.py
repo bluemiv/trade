@@ -2,6 +2,7 @@
 
 import time
 
+import pandas
 import pyupbit
 
 
@@ -37,6 +38,21 @@ class UpbitHandler:
             'avg_currency_price': float(info['avg_buy_price']),
             'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
         }
+
+    def get_min_rsi(self, currency, count=1):
+        """현재 rsi 값을 가지고 온다"""
+        data = pyupbit.get_ohlcv(ticker=currency, interval=f"minute{count}")
+        close_data = data["close"]
+        delta = close_data.diff()
+        ups, downs = delta.copy(), delta.copy()
+        ups[ups < 0] = 0
+        downs[downs > 0] = 0
+        period = 14
+        au = ups.ewm(com=period - 1, min_periods=period).mean()
+        ad = downs.abs().ewm(com=period - 1, min_periods=period).mean()
+        rs = au / ad
+        rsi = pandas.Series(100 - (100 / (1 + rs)))
+        return rsi[-1]
 
     def get_day_ma(self, currency, count=20):
         """이동평균선을 구한다
@@ -209,3 +225,18 @@ class UpbitHandler:
         for uuid in uuid_list:
             self._upbit.cancel_order(uuid)
             time.sleep(0.1)
+
+    def get_price_delta(self, current_price):
+        """틱 하나의 가격을 가져옴"""
+        if 1 <= current_price < 10:
+            return 0.01
+        elif 10 <= current_price < 100:
+            return 0.1
+        elif 100 <= current_price < 1000:
+            return 1
+        elif 1000 <= current_price < 10000:
+            return 5
+        elif 10000 <= current_price < 100000:
+            return 10
+        elif 100000 <= current_price < 1000000:
+            return 50

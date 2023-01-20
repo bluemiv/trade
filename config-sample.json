@@ -5,6 +5,11 @@
     "infinity": {
       "trade_coin": "KRW-XRP",
       "init_krw": 6000
+    },
+    "rsi":  {
+      "trade_coin": "KRW-WAXP",
+      "init_krw": 6000,
+      "buy_rsi": 29
     }
   }
 }
