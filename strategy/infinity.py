@@ -42,7 +42,7 @@ class Infinity:
 
         self.log(f'[매수 예약 진행]')
         for idx in range(7):
-            price = start_coin_price - idx * delta_price
+            price = round(start_coin_price - idx * delta_price, 4)
             self._upbit.buy_limit(self._currency, price, self._init_krw / price)
             self.log(f'>> [매수 예약] coin price: {price}')
             time.sleep(0.25)
@@ -54,6 +54,7 @@ class Infinity:
             # 1.5% 이상일 매도
             sell_rate = 1.5
             rate = self._upbit.get_rate(current_price, avg_coin_price)
+            self.log(f'>> 현재 수익: {rate}%')
             if rate >= sell_rate:
                 if coin_account['avg_krw_price'] / 2 <= self._init_krw:
                     # 전량 매도
