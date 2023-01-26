@@ -1,13 +1,10 @@
 # -*- coding: utf-8 -*-
 
 import datetime
-import math
-import time
 
 from upbit import core
 from utils import config_parser
 from utils import decoration
-
 
 
 class Rsi:
@@ -36,7 +33,6 @@ class Rsi:
 
     @decoration.forever(timer=10)
     def run(self):
-        # 모든 주문 취소
         coin_account = self._upbit.get_balance(self._currency)
         current_price = self._upbit.get_current_price(self._currency)
 

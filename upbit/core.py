@@ -75,10 +75,8 @@ class UpbitHandler:
             rate = self.get_rate(current_price, ma)
 
             if rate >= -1 * _rate and rate <= _rate / 2:
-                print("트레이드 대상 currency: {} / rate: {:f}%".format(currency, rate))
                 result.append(currency)
-
-            time.sleep(0.15)
+            time.sleep(0.1)
 
         return result
 

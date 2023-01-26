@@ -6,10 +6,34 @@
       "trade_coin": "KRW-XRP",
       "init_krw": 6000
     },
-    "rsi":  {
-      "trade_coin": "KRW-WAXP",
+    "rsi": {
+      "trade_coin": "KRW-XRP",
       "init_krw": 6000,
       "buy_rsi": 29
+    },
+    "auto_seller": {
+      "trade_coin": "KRW-XRP",
+      "sell_rate": 1
+    },
+    "seed": {
+      "black_list": [
+        "KRW-BTT",
+        "KRW-NU",
+        "KRW-WAVES",
+        "KRW-KAVA",
+        "KRW-SHIB",
+        "KRW-LTC",
+        "KRW-SHIB",
+        "KRW-XEM",
+        "KRW-WEMIX",
+        "KRW-MBL",
+        "KRW-WAVES",
+        "KRW-1INCH"
+      ],
+      "min_krw": 8000,
+      "max_krw": 50000,
+      "buy_rate": 8,
+      "sell_rate": 8
     }
   }
 }
