@@ -29,7 +29,9 @@ class Seed:
 
     def _get_init_krw(self):
         """매수 금액을 설정한다"""
-        result = int(self._upbit.get_my_total_krw() / 15000000)
+        krw_account = self._upbit.get_balance("KRW")
+        total_krw = krw_account["avg_krw_price"] + krw_account["locked"]
+        result = int(total_krw / 400)
         if result < self._min_krw:
             result = self._min_krw
         if result > self._max_krw:
@@ -91,9 +93,10 @@ class Seed:
                 self._upbit.sell_market(currency, coin_account['balance'])
 
             # 추가 매수
-            if rate <= self._buy_rate:
+            buy_rate = self._buy_rate - int(avg_coin_price / init_krw)
+            if rate <= buy_rate:
                 self.log(
                     currency,
-                    f'{self._buy_rate}% 이하, 추가 매수 진행. rate: {rate} / price: {krw}원 / balance: {balance}'
+                    f'{buy_rate}% 이하, 추가 매수 진행. rate: {rate} / price: {krw}원 / balance: {balance}'
                 )
                 self._upbit.buy_market(currency, init_krw)
