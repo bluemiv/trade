@@ -56,7 +56,7 @@ class Seed:
         init_krw = self._get_init_krw()
         self.log('', f"1회 매수 금액: {init_krw}")
 
-        # 현재 자산 조회
+        # 거래할 자산 조회
         currency_list = self._get_target_currency_list()
         self.log('', f"자산: {currency_list}")
 

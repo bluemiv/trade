@@ -39,9 +39,9 @@ class UpbitHandler:
             'avg_krw_price': float(info['balance']) * float(info['avg_buy_price'])
         }
 
-    def get_min_rsi(self, currency, count=1):
+    def get_min_rsi(self, currency, min_count=1):
         """현재 rsi 값을 가지고 온다"""
-        data = pyupbit.get_ohlcv(ticker=currency, interval=f"minute{count}")
+        data = pyupbit.get_ohlcv(ticker=currency, interval=f"minute{min_count}")
         close_data = data["close"]
         delta = close_data.diff()
         ups, downs = delta.copy(), delta.copy()
