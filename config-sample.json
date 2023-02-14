@@ -23,8 +23,9 @@
         "KRW-BSV"
       ],
       "init_krw": 50000,
-      "buy_rsi": 32,
-      "add_buy_rate": -10
+      "buy_rsi": 34,
+      "add_buy_rate": -10,
+      "sell_rate": 10
     },
     "auto_seller": {
       "trade_coin": "KRW-GMT",
