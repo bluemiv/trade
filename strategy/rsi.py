@@ -20,6 +20,9 @@ class Rsi:
         self._add_buy_rate = self._options['add_buy_rate']
         self._add_buy_rate = self._add_buy_rate if self._add_buy_rate < 0 else self._add_buy_rate * -1
 
+        self._sell_rate = self._options['sell_rate']
+        self._sell_rate = self._sell_rate if self._sell_rate > 0 else self._sell_rate * -1
+
         self.log('', f'Options: {self._options}')
 
     def _get_init_krw(self):
@@ -59,13 +62,23 @@ class Rsi:
                 # 매수
                 self.log(currency, f'[매수] rsi {self._buy_rsi} 이하, {self._init_krw}원 매수 진행 (현재 가격: {current_price})')
                 self._upbit.buy_market(currency, self._init_krw)
-                time.sleep(0.1)
 
             else:
-                # 추가 매수
                 avg_coin_price = coin_account['avg_currency_price']
                 rate = self._upbit.get_rate(current_price, avg_coin_price)
                 if rate <= self._add_buy_rate:
+                    # 추가 매수
                     self.log(currency, f'{self._add_buy_rate}% 이하, {self._init_krw}원 추가 매수 진행. rate: {rate}')
                     self._upbit.buy_market(currency, self._init_krw)
-                    time.sleep(0.1)
+
+                elif rate > self._sell_rate:
+                    # 매도
+                    krw = coin_account['avg_krw_price']
+                    balance = coin_account["balance"]
+                    self.log(
+                        currency,
+                        f'{self._sell_rate}% 이상, 이익 실현. 전량 매도 진행. rate: {rate} / price: {krw}원 / balance: {balance}'
+                    )
+                    self._upbit.sell_market(currency, coin_account['balance'])
+
+            time.sleep(0.1)
