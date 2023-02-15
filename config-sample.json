@@ -20,12 +20,14 @@
         "KRW-MBL",
         "KRW-WAVES",
         "KRW-1INCH",
-        "KRW-BSV"
+        "KRW-BSV",
+        "KRW-AHT"
       ],
-      "init_krw": 50000,
-      "buy_rsi": 34,
+      "init_krw": 20000,
+      "buy_rsi": 30,
       "add_buy_rate": -10,
-      "sell_rate": 10
+      "sell_rate": 2,
+      "ticker_count": 1
     },
     "auto_seller": {
       "trade_coin": "KRW-GMT",

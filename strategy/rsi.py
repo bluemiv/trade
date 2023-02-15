@@ -23,6 +23,8 @@ class Rsi:
         self._sell_rate = self._options['sell_rate']
         self._sell_rate = self._sell_rate if self._sell_rate > 0 else self._sell_rate * -1
 
+        self._ticker_count = self._options['ticker_count']
+
         self.log('', f'Options: {self._options}')
 
     def _get_init_krw(self):
@@ -51,7 +53,7 @@ class Rsi:
             not_exists_account = coin_account is None
 
             if not_exists_account:
-                rsi = self._upbit.get_min_rsi(currency, 240)
+                rsi = self._upbit.get_min_rsi(currency, self._ticker_count)
                 if rsi <= self._buy_rsi:
                     # 매수
                     self.log(currency, f'[매수] rsi {self._buy_rsi} 이하, {self._init_krw}원 매수 진행 (현재 가격: {current_price})')
