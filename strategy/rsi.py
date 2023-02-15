@@ -39,29 +39,23 @@ class Rsi:
         now = datetime.datetime.now()
         print("{:<20}\t{:<11}\t{}".format(str(now).split(".")[0], currency, message))
 
-    def _get_target_currency(self):
-        result = []
-        for currency in self._upbit.get_tickers():
-            rsi = self._upbit.get_min_rsi(currency, 240)
-            if rsi <= self._buy_rsi and currency not in self._black_list:
-                print(currency, rsi)
-                result.append(currency)
-            time.sleep(0.25)
-        return result
-
     @decoration.forever(timer=10)
     def run(self):
-        currency_list = self._get_target_currency()
-        for currency in currency_list:
+        for currency in self._upbit.get_tickers():
+            if currency in self._black_list:
+                continue
+            time.sleep(0.25)
+
             coin_account = self._upbit.get_balance(currency)
             current_price = self._upbit.get_current_price(currency)
-
             not_exists_account = coin_account is None
 
             if not_exists_account:
-                # 매수
-                self.log(currency, f'[매수] rsi {self._buy_rsi} 이하, {self._init_krw}원 매수 진행 (현재 가격: {current_price})')
-                self._upbit.buy_market(currency, self._init_krw)
+                rsi = self._upbit.get_min_rsi(currency, 240)
+                if rsi <= self._buy_rsi:
+                    # 매수
+                    self.log(currency, f'[매수] rsi {self._buy_rsi} 이하, {self._init_krw}원 매수 진행 (현재 가격: {current_price})')
+                    self._upbit.buy_market(currency, self._init_krw)
 
             else:
                 avg_coin_price = coin_account['avg_currency_price']
@@ -80,5 +74,3 @@ class Rsi:
                         f'{self._sell_rate}% 이상, 이익 실현. 전량 매도 진행. rate: {rate} / price: {krw}원 / balance: {balance}'
                     )
                     self._upbit.sell_market(currency, coin_account['balance'])
-
-            time.sleep(0.1)
