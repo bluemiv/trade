@@ -21,13 +21,15 @@
         "KRW-WAVES",
         "KRW-1INCH",
         "KRW-BSV",
-        "KRW-AHT"
+        "KRW-AHT",
+        "KRW-GMT",
+        "KRW-MED"
       ],
-      "init_krw": 20000,
-      "buy_rsi": 30,
+      "init_krw": 10000,
+      "buy_rsi": 31,
       "add_buy_rate": -10,
       "sell_rate": 2,
-      "ticker_count": 1
+      "ticker_count": 10
     },
     "auto_seller": {
       "trade_coin": "KRW-GMT",
@@ -47,12 +49,15 @@
         "KRW-MBL",
         "KRW-WAVES",
         "KRW-1INCH",
-        "KRW-BSV"
+        "KRW-BSV",
+        "KRW-AHT",
+        "KRW-GMT",
+        "KRW-MED"
       ],
-      "min_krw": 8000,
+      "min_krw": 6000,
       "max_krw": 50000,
       "buy_rate": 3,
-      "sell_rate": 5
+      "sell_rate": 30
     }
   }
 }

@@ -31,7 +31,7 @@ class Seed:
         """매수 금액을 설정한다"""
         krw_account = self._upbit.get_balance("KRW")
         total_krw = krw_account["avg_krw_price"] + krw_account["locked"]
-        result = int(total_krw / 400)
+        result = int(total_krw / 500)
         if result < self._min_krw:
             result = self._min_krw
         if result > self._max_krw:
