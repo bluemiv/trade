@@ -23,7 +23,8 @@
         "KRW-BSV",
         "KRW-AHT",
         "KRW-GMT",
-        "KRW-MED"
+        "KRW-MED",
+        "KRW-APT"
       ],
       "init_krw": 10000,
       "buy_rsi": 31,
@@ -52,11 +53,12 @@
         "KRW-BSV",
         "KRW-AHT",
         "KRW-GMT",
-        "KRW-MED"
+        "KRW-MED",
+        "KRW-APT"
       ],
       "min_krw": 6000,
       "max_krw": 50000,
-      "buy_rate": 3,
+      "buy_rate": 5,
       "sell_rate": 5
     }
   }

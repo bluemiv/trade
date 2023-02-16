@@ -51,7 +51,7 @@ class Seed:
         my_currency_list = self._upbit.valid_currency_filter(raw_list)
         return list(filter(lambda x: x not in self._black_list, my_currency_list))
 
-    @decoration.forever(timer=10)
+    @decoration.forever(timer=30)
     def run(self):
         init_krw = self._get_init_krw()
         self.log('', f"1회 매수 금액: {init_krw}")
