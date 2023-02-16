@@ -57,7 +57,7 @@
       "min_krw": 6000,
       "max_krw": 50000,
       "buy_rate": 3,
-      "sell_rate": 30
+      "sell_rate": 5
     }
   }
 }
