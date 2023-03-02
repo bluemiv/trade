@@ -29,9 +29,12 @@ if __name__ == '__main__':
         target_symbol = "STXUSDT"
         tick_usdt = 0.001
         timeout = 0.2
-        init_qty = 10
 
         while True:
+            my_usdt = float(bb.get_my_account("USDT")["USDT"]["equity"])
+            init_qty = int(my_usdt / 30)
+            print(f"my_usdt: {my_usdt} USDT / init_qty: {init_qty} COIN")
+
             # short 포지션 초기화
             sell_order_list = bb.query_active_order(symbol=target_symbol)
             for sell_order in sell_order_list:
@@ -83,19 +86,22 @@ if __name__ == '__main__':
                         init_usdt = int(init_usdt * 1000) / 1000
 
                         cur_qty = 0
-                        did_num = 2
-                        for i in range(did_num):
+                        div_num = 2
+                        for i in range(div_num):
                             cur_usdt = init_usdt - i * tick_usdt
 
                             if cur_qty == 0:
-                                cur_qty = int(qty / did_num)
+                                cur_qty = int(qty / div_num)
                                 qty = qty - cur_qty
 
-                            if i == did_num - 1:
+                            if i == div_num - 1:
                                 cur_qty = qty
 
-                            bb.close_short(symbol=target_symbol, qty=cur_qty,
-                                           price=cur_usdt)
+                            try:
+                                bb.close_short(symbol=target_symbol, qty=cur_qty,
+                                               price=cur_usdt)
+                            except Exception:
+                                print(traceback.format_exc())
                             time.sleep(timeout)
 
             time.sleep(10 * 60)
