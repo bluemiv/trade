@@ -29,6 +29,7 @@ if __name__ == '__main__':
         target_symbol = "STXUSDT"
         tick_usdt = 0.001
         timeout = 0.2
+        init_qty = 10
 
         while True:
             # short 포지션 초기화
@@ -54,15 +55,16 @@ if __name__ == '__main__':
 
             # 매수
             sell_list = list(filter(lambda x: x["side"] == "Sell", bb.get_order_book(symbol=target_symbol)))
-            second = int(float(sell_list[20]["price"]) * 1000) / 1000
+            cur_price = float(sell_list[10]["price"])
             if cur_usdt is None:
-                init_usdt = second
+                init_usdt = cur_price
             else:
-                init_usdt = max(second, int((cur_usdt + 3 * tick_usdt) * 1000) / 1000) + tick_usdt
+                init_usdt = max(cur_price, cur_usdt) + tick_usdt
+            init_usdt = int(init_usdt * 1000) / 1000
 
-            for i in range(10):
+            for i in range(7):
                 cur = round(init_usdt + (i + 1) * tick_usdt, 4)
-                order = bb.open_short(target_symbol, 20, cur)
+                order = bb.open_short(target_symbol, init_qty, cur)
                 time.sleep(timeout)
 
             # 매도 예약
@@ -76,14 +78,14 @@ if __name__ == '__main__':
 
                         entry_price = position["entry_price"]
                         buy_list = list(filter(lambda x: x["side"] == "Buy", bb.get_order_book(symbol=target_symbol)))
-                        market_price = float(buy_list[20]["price"])
+                        market_price = float(buy_list[10]["price"])
                         init_usdt = min(market_price, entry_price) - tick_usdt
                         init_usdt = int(init_usdt * 1000) / 1000
 
                         cur_qty = 0
-                        did_num = 4
+                        did_num = 2
                         for i in range(did_num):
-                            cur_usdt = init_usdt - (i + 2) * tick_usdt
+                            cur_usdt = init_usdt - i * tick_usdt
 
                             if cur_qty == 0:
                                 cur_qty = int(qty / did_num)
@@ -96,4 +98,4 @@ if __name__ == '__main__':
                                            price=cur_usdt)
                             time.sleep(timeout)
 
-            time.sleep(5 * 60)
+            time.sleep(10 * 60)
