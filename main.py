@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
         while True:
             my_usdt = float(bb.get_my_account("USDT")["USDT"]["equity"])
-            init_qty = int(my_usdt / 30)
+            init_qty = int(my_usdt / (30 * 2))
             print(f"my_usdt: {my_usdt} USDT / init_qty: {init_qty} COIN")
 
             # short 포지션 초기화
@@ -86,7 +86,7 @@ if __name__ == '__main__':
                         init_usdt = int(init_usdt * 1000) / 1000
 
                         cur_qty = 0
-                        div_num = 2
+                        div_num = 4
                         for i in range(div_num):
                             cur_usdt = init_usdt - i * tick_usdt
 
