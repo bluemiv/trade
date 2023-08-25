@@ -60,6 +60,18 @@ class ByBit():
             close_on_trigger=False
         )
 
+    def close_long(self, symbol, qty, price):
+        return self.session.place_active_order(
+            symbol=symbol,
+            side="Sell",
+            order_type="Limit",
+            qty=qty,
+            price=price,
+            time_in_force="GoodTillCancel",
+            reduce_only=True,
+            close_on_trigger=False
+        )
+
     def query_active_order(self, symbol):
         return self.session.query_active_order(symbol=symbol)["result"]
 

@@ -80,6 +80,49 @@ class UpbitHandler:
 
         return result
 
+    def get_krw_tickers(self):
+        """원화 마켓의 코인 심볼 목록을 반환"""
+        return pyupbit.get_tickers(fiat="KRW")
+
+    def get_my_total_krw(self):
+        """나의 현재 총 자산을 원화로 계산하여 반환"""
+        result = 0
+        all_coin_list = self.get_krw_tickers()
+        balances = self._upbit.get_balances()
+
+        krw = list(filter(lambda x: x["currency"] == "KRW", balances))
+        krw = 0 if len(krw) == 0 else krw[0]["balance"]
+        krw = 0 if krw is None else float(krw)
+        result += 0 if krw is None else krw
+
+        coin_list = list(filter(lambda x: f"KRW-{x['currency']}" in all_coin_list, balances))
+        coin_list = list(map(lambda x: f"KRW-{x['currency']}", coin_list))
+
+        coin_current_price_list = pyupbit.get_current_price(coin_list)
+
+        for idx, currency in enumerate(coin_current_price_list):
+            coin_price = 0 if coin_current_price_list[currency] is None else float(coin_current_price_list[currency])
+            if coin_price == 0:
+                continue
+
+            target_balance = None
+            for balance in balances:
+                if f"KRW-{balance['currency']}" == currency:
+                    target_balance = balance
+                    break
+
+            if target_balance is None:
+                continue
+
+            balance = float(target_balance["balance"])
+            result += balance * coin_price
+
+        return result
+
+    def get_my_usable_krw(self):
+        """내가 현재 사용 가능한 금액 조회"""
+        return self._upbit.get_balance("KRW")
+
     def get_tickers(self, without_krw=True, only_krw_market=True):
         """현재 upbit에 상장된 모든 currency 정보를 가지고 온다"""
         currency_list = self._tickers
@@ -108,12 +151,6 @@ class UpbitHandler:
         for info in self._upbit.get_balances():
             result.append(self._custom_balance_filter(info))
         return result
-
-    def get_my_total_krw(self):
-        """내 전체 자산을 조회한다"""
-        return sum(
-            list(map(lambda x: x['avg_krw_price'] + x['locked'] * x['avg_currency_price'], self.get_balance_all()))
-        )
 
     def get_my_currency_list(self, without_krw=True, only_krw_market=True):
         """내가 가지고 있는 자산의 currency 목록을 조회한다"""

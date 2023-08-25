@@ -1,107 +1,86 @@
 # -*- coding: utf-8 -*-
-import time
-import traceback
 
-from bybit import bybit
-from strategy import auto_seller
-from strategy import infinity
-from strategy import rsi
-from strategy import seed
+import math
+import time
+import logging
+
+from upbit import core
 from utils import config_parser
 
-if __name__ == '__main__':
+
+def init_logger():
+    _logger = logging.getLogger()
+
+    _logger.setLevel(logging.INFO)
+
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
+    stream_handler = logging.StreamHandler()
+    stream_handler.setFormatter(formatter)
+    _logger.addHandler(stream_handler)
+    return _logger
+
+
+if __name__ == "__main__":
+    # init logger
+    logger = init_logger()
+
+    # load config
     config = config_parser.get_config()
-    platform = int(input("1. UPBIT\n2. BYBIT\n > "))
-    if platform == 1:
-        st = [
-            {"idx": 0, "label": "무한매매", "obj": infinity.Infinity},
-            {"idx": 1, "label": "RSI 매매", "obj": rsi.Rsi},
-            {"idx": 2, "label": "자동 매도", "obj": auto_seller.AutoSeller},
-            {"idx": 3, "label": "농부 매매", "obj": seed.Seed}
-        ]
-        choice = '\n'.join(list(map(lambda x: f"{x['idx']}. {x['label']}", st)))
-        num = input(f"매매 전략 선택\n{choice}\n > ")
-        st[int(num)]["obj"]().run()
-    else:
-        bybit_config = config["bybit"]
-        bb = bybit.ByBit(bybit_config["api_key"], bybit_config["secret_key"])
+    ACCESS_KEY = config["access_key"]
+    SECRET_KEY = config["secret_key"]
+    logger.info(f"access key: {ACCESS_KEY} / secret key: {SECRET_KEY}")
 
-        target_symbol = "STXUSDT"
-        tick_usdt = 0.001
-        timeout = 0.2
+    upbit = core.UpbitHandler(ACCESS_KEY, SECRET_KEY)
 
-        while True:
-            my_usdt = float(bb.get_my_account("USDT")["USDT"]["equity"])
-            init_qty = int(my_usdt / 30)
-            print(f"my_usdt: {my_usdt} USDT / init_qty: {init_qty} COIN")
+    all_coin_list = upbit.get_krw_tickers()
+    TARGET_COIN_LIST = list(filter(lambda x: x in all_coin_list, config["target_coin"]))
+    logger.info(f"총 {len(TARGET_COIN_LIST)}개의 트레이드 대상 coin: {TARGET_COIN_LIST}")
 
-            # short 포지션 초기화
-            sell_order_list = bb.query_active_order(symbol=target_symbol)
-            for sell_order in sell_order_list:
-                order_id = sell_order["order_id"]
-                try:
-                    bb.cancel_active_order(symbol=target_symbol, order_id=order_id)
-                    time.sleep(timeout)
-                except Exception:
-                    print(traceback.format_exc())
+    # 매수 금액 설정
+    my_total_krw = upbit.get_my_total_krw()
+    init_krw = math.floor(my_total_krw / 128)
+    init_krw = 5050 if init_krw <= 5050 else init_krw
+    init_krw = 30000 if init_krw >= 30000 else init_krw
+    logger.info(f"현재 총 자산 {my_total_krw}원에 의해 설정된 매수 금액: {init_krw}")
 
-            position_list = bb.get_my_position(symbol=target_symbol)
-            if len(position_list) == 0:
-                cur_usdt = None
-            else:
-                cur_usdt = list(filter(lambda x: x["side"] == "Sell" and x["entry_price"] > 0, position_list))
-                if len(cur_usdt) > 0:
-                    cur_usdt = cur_usdt[0][
-                        "entry_price"]
-                else:
-                    cur_usdt = None
+    usable_krw = upbit.get_my_usable_krw()
 
-            # 매수
-            sell_list = list(filter(lambda x: x["side"] == "Sell", bb.get_order_book(symbol=target_symbol)))
-            cur_price = float(sell_list[10]["price"])
-            if cur_usdt is None:
-                init_usdt = cur_price
-            else:
-                init_usdt = max(cur_price, cur_usdt) + tick_usdt
-            init_usdt = int(init_usdt * 1000) / 1000
+    for currency in TARGET_COIN_LIST:
+        logger.info(f"\n\n")
+        logger.info(f"[TRADE START] currency: {currency}")
 
-            for i in range(7):
-                cur = round(init_usdt + (i + 1) * tick_usdt, 4)
-                order = bb.open_short(target_symbol, init_qty, cur)
-                time.sleep(timeout)
+        coin_account = upbit.get_balance(currency)
+        market_coin_price = upbit.get_current_price(currency)
+        logger.info(f"> 현재 보유 중인 코인 정보: {coin_account}")
+        logger.info(f"> 현재 코인의 시장 가격: {market_coin_price} {currency.replace('KRW-', '')}")
 
-            # 매도 예약
-            if cur_usdt is not None:
-                my_position_list = bb.get_my_position(symbol=target_symbol)
-                if len(position_list) != 0:
-                    position = list(filter(lambda x: x["side"] == "Sell" and x["free_qty"] > 0, my_position_list))
-                    if len(position) > 0:
-                        position = position[0]
-                        qty = position["free_qty"]
+        can_buy = usable_krw > init_krw * 1.2
 
-                        entry_price = position["entry_price"]
-                        buy_list = list(filter(lambda x: x["side"] == "Buy", bb.get_order_book(symbol=target_symbol)))
-                        market_price = float(buy_list[10]["price"])
-                        init_usdt = min(market_price, entry_price) - tick_usdt
-                        init_usdt = int(init_usdt * 1000) / 1000
+        # 매수를 한번도 안한 코인의 경우
+        not_exists_account = coin_account is None
+        if not_exists_account:
+            rsi_minute = 10
+            rsi = upbit.get_min_rsi(currency, rsi_minute)
+            logger.info(f"> {rsi_minute}분 동안의 rsi: {rsi}")
+            if rsi <= 45 and can_buy:
+                logger.info(f"> rsi가 45 이하이므로, 첫 매수 {init_krw}원 진행")
+                upbit.buy_market(currency, init_krw)
 
-                        cur_qty = 0
-                        div_num = 6
-                        for i in range(div_num):
-                            cur_usdt = init_usdt - i * tick_usdt
+        # 매수를 한적이 있는 코인의 경우
+        else:
+            avg_coin_price = coin_account['avg_currency_price']
+            rate = upbit.get_rate(market_coin_price, avg_coin_price)
+            logger.info(f"> 현재 수익률: {rate}%")
 
-                            if cur_qty == 0:
-                                cur_qty = int(qty / div_num)
-                                qty = qty - cur_qty
+            # 추가 매수
+            if rate <= -6:
+                logger.info(f"수익률 -6%이하로 추가 매수 {init_krw}원 진행")
+                upbit.buy_market(currency, init_krw)
 
-                            if i == div_num - 1:
-                                cur_qty = qty
+            # 매도
+            if rate >= 3:
+                logger.info(f"수익률 3%이상으로 전량 매도. {coin_account['avg_krw_price']}원 이익 실현.")
+                upbit.sell_market(currency, coin_account['balance'])
 
-                            try:
-                                bb.close_short(symbol=target_symbol, qty=cur_qty,
-                                               price=cur_usdt)
-                            except Exception:
-                                print(traceback.format_exc())
-                            time.sleep(timeout)
-
-            time.sleep(10 * 60)
+        time.sleep(0.25)

@@ -1,69 +1,35 @@
 {
-  "bybit": {
-    "api_key": "your_api_key",
-    "secret_key": "your_secret_key"
-  },
-  "access_key": "your_access_key",
-  "secret_key": "your_secret_key",
-  "strategy": {
-    "infinity": {
-      "trade_coin": "KRW-XRP",
-      "init_krw": 6000
-    },
-    "rsi": {
-      "black_list": [
-        "KRW-BTT",
-        "KRW-NU",
-        "KRW-WAVES",
-        "KRW-KAVA",
-        "KRW-SHIB",
-        "KRW-LTC",
-        "KRW-SHIB",
-        "KRW-XEM",
-        "KRW-WEMIX",
-        "KRW-MBL",
-        "KRW-WAVES",
-        "KRW-1INCH",
-        "KRW-BSV",
-        "KRW-AHT",
-        "KRW-GMT",
-        "KRW-MED",
-        "KRW-APT"
-      ],
-      "init_krw": 10000,
-      "buy_rsi": 31,
-      "add_buy_rate": -10,
-      "sell_rate": 2,
-      "ticker_count": 10
-    },
-    "auto_seller": {
-      "trade_coin": "KRW-GMT",
-      "sell_rate": 0.9
-    },
-    "seed": {
-      "black_list": [
-        "KRW-BTT",
-        "KRW-NU",
-        "KRW-WAVES",
-        "KRW-KAVA",
-        "KRW-SHIB",
-        "KRW-LTC",
-        "KRW-SHIB",
-        "KRW-XEM",
-        "KRW-WEMIX",
-        "KRW-MBL",
-        "KRW-WAVES",
-        "KRW-1INCH",
-        "KRW-BSV",
-        "KRW-AHT",
-        "KRW-GMT",
-        "KRW-MED",
-        "KRW-APT"
-      ],
-      "min_krw": 6000,
-      "max_krw": 50000,
-      "buy_rate": 5,
-      "sell_rate": 5
-    }
-  }
+  "access_key": "",
+  "secret_key": "",
+  "target_coin": [
+    "KRW-VET",
+    "KRW-BTC",
+    "KRW-ATOM",
+    "KRW-ETH",
+    "KRW-XRP",
+    "KRW-ZRX",
+    "KRW-ICX",
+    "KRW-LINK",
+    "KRW-KNC",
+    "KRW-ADA",
+    "KRW-POWR",
+    "KRW-SOL",
+    "KRW-HUNT",
+    "KRW-MLK",
+    "KRW-ETC",
+    "KRW-XLM",
+    "KRW-STX",
+    "KRW-SAND",
+    "KRW-PLA",
+    "KRW-MATIC",
+    "KRW-KAVA",
+    "KRW-APT",
+    "KRW-ELF",
+    "KRW-BTG",
+    "KRW-HIVE",
+    "KRW-MANA",
+    "KRW-GLM",
+    "KRW-AERGO",
+    "KRW-BORA"
+  ]
 }
