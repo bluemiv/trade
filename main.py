@@ -79,8 +79,8 @@ if __name__ == "__main__":
                 upbit.buy_market(currency, init_krw)
 
             # 매도
-            if rate >= 3:
-                logger.info(f"수익률 3%이상으로 전량 매도. {coin_account['avg_krw_price']}원 이익 실현.")
+            if rate >= 2:
+                logger.info(f"수익률 2%이상으로 전량 매도. {coin_account['avg_krw_price']}원 이익 실현.")
                 upbit.sell_market(currency, coin_account['balance'])
 
         time.sleep(0.25)
