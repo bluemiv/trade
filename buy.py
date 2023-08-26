@@ -74,13 +74,8 @@ if __name__ == "__main__":
             logger.info(f"> 현재 수익률: {rate}%")
 
             # 추가 매수
-            if rate <= -6:
+            if rate <= -6 and can_buy:
                 logger.info(f"수익률 -6%이하로 추가 매수 {init_krw}원 진행")
                 upbit.buy_market(currency, init_krw)
-
-            # 매도
-            if rate >= 2:
-                logger.info(f"수익률 2%이상으로 전량 매도. {coin_account['avg_krw_price']}원 이익 실현.")
-                upbit.sell_market(currency, coin_account['balance'])
 
         time.sleep(0.25)

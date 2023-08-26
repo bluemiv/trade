@@ -1,7 +1,7 @@
 {
   "access_key": "",
   "secret_key": "",
-  "target_coin": [
+    "target_coin": [
     "KRW-VET",
     "KRW-BTC",
     "KRW-ATOM",
@@ -30,6 +30,14 @@
     "KRW-MANA",
     "KRW-GLM",
     "KRW-AERGO",
-    "KRW-BORA"
+    "KRW-BORA",
+    "KRW-SBD",
+    "KRW-HBAR",
+    "KRW-STMX",
+    "KRW-DOGE",
+    "KRW-DKA",
+    "KRW-ARB",
+    "KRW-MTL",
+    "KRW-EOS"
   ]
 }

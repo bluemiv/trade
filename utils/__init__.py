@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-__all__ = ['decoration', 'config_parser']
+__all__ = ['config_parser']
