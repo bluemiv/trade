@@ -40,7 +40,7 @@ if __name__ == "__main__":
     # 매수 금액 설정
     my_total_krw = upbit.get_my_total_krw()
     init_krw = math.floor(my_total_krw / 128)
-    init_krw = 5050 if init_krw <= 5050 else init_krw
+    init_krw = 5000 * 1.01 if init_krw <= 5000 * 1.01 else init_krw
     init_krw = 30000 if init_krw >= 30000 else init_krw
     logger.info(f"현재 총 자산 {my_total_krw}원에 의해 설정된 매수 금액: {init_krw}")
 
@@ -74,8 +74,8 @@ if __name__ == "__main__":
             logger.info(f"> 현재 수익률: {rate}%")
 
             # 추가 매수
-            if rate <= -6 and can_buy:
-                logger.info(f"수익률 -6%이하로 추가 매수 {init_krw}원 진행")
+            if rate <= -5 and can_buy:
+                logger.info(f"수익률 -5%이하로 추가 매수 {init_krw}원 진행")
                 upbit.buy_market(currency, init_krw)
 
         time.sleep(0.25)

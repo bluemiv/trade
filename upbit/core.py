@@ -190,7 +190,7 @@ class UpbitHandler:
         assert amount > 0, "Invalid amount. amount: {}".format(amount)
         assert price > 0, "Invalid price. price: {}".format(price)
 
-        assert price * amount > self._minium_price, "Greater than {}WON. price: {}, amount: {}".format(
+        assert price * amount >= self._minium_price, "Greater than {}WON. price: {}, amount: {}".format(
             self._minium_price, price, amount
         )
 
@@ -213,7 +213,7 @@ class UpbitHandler:
         assert amount > 0, "Invalid amount. amount: {}".format(amount)
         assert price > 0, "Invalid price. price: {}".format(price)
 
-        assert price * amount > self._minium_price, "Greater than {}WON. price: {}, amount: {}".format(
+        assert price * amount >= self._minium_price, "Greater than {}WON. price: {}, amount: {}".format(
             self._minium_price, price, amount
         )
 
@@ -228,7 +228,7 @@ class UpbitHandler:
         """
         _currency = currency.upper()
         self._check_valid_currency(_currency)
-        assert price > self._minium_price, "Greater than {}WON. price: {}".format(self._minium_price, price)
+        assert price >= self._minium_price, "Greater than {}WON. price: {}".format(self._minium_price, price)
 
         return self._upbit.buy_market_order(_currency, price)
 
