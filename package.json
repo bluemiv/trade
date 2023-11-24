@@ -1,0 +1,16 @@
+{
+  "name": "cotra",
+  "packageManager": "yarn@4.0.2",
+  "workspaces": {
+    "packages": [
+      "apps/**",
+      "packages/**"
+    ]
+  },
+  "scripts": {
+    "server": "yarn workspace @cotra/server"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
