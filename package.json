@@ -8,7 +8,11 @@
     ]
   },
   "scripts": {
-    "server": "yarn workspace @cotra/server"
+    "server": "yarn workspace @cotra/server",
+    "start": "yarn concurrently \"yarn server start:dev\" \"docker-compose down && docker-compose up -d\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
   },
   "engines": {
     "node": ">=18"
