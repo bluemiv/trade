@@ -1,13 +1,22 @@
 import { IsString, MaxLength, MinLength } from 'class-validator';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-import { UserStatus } from './model/UserStatus';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { UserStatus } from '../../auth/model/UserStatus';
 
 @Entity()
 export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
   @IsString()
   @MinLength(4)
   @MaxLength(20)
-  @PrimaryGeneratedColumn()
   username: string;
 
   @IsString()
@@ -17,9 +26,12 @@ export class User {
   @Column({ default: UserStatus.ACTIVE })
   status: UserStatus;
 
-  @Column()
+  @CreateDateColumn()
   createdAt: string;
 
-  @Column()
+  @UpdateDateColumn()
   updatedAt: string;
+
+  @DeleteDateColumn()
+  deletedAt: string;
 }

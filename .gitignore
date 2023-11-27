@@ -1,5 +1,6 @@
 # database
 pgdata/
+pgadmin/
 
 # compiled output
 **/dist
