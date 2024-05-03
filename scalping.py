@@ -7,9 +7,6 @@ import time
 
 import pyupbit
 
-TRADE_SYMBOL = ["KRW-MATIC"]
-SLEEP_TIME = 0.3
-
 
 def get_config():
     config_file_path = os.path.join(os.path.dirname(__file__), "config.json")
@@ -22,7 +19,7 @@ upbit = pyupbit.Upbit(config["access_key"], config["secret_key"])
 
 
 def sleep():
-    time.sleep(SLEEP_TIME)
+    time.sleep(float(config["sleep_time"]))
 
 
 def get_my_total_seed():
@@ -137,7 +134,7 @@ if __name__ == "__main__":
     price_atom = math.floor(total_seed / 25)
     print(f"[INFO] 1매수 당 가격: {price_atom}원")
 
-    for symbol in TRADE_SYMBOL:
+    for symbol in config["trade_symbols"]:
         print(f"\n[INFO] {symbol} 자동매매를 시작합니다.")
         print(f"\t >> 매수 주문을 초기화합니다.")
         cancel_buy_orders(symbol)
