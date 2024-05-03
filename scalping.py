@@ -82,7 +82,7 @@ def buy_order(symbol, price):
     orderbook_units = orderbook['orderbook_units']
     trg_price = float(orderbook_units[0]["bid_price"])
     volume = price / trg_price
-    upbit.buy_limit_order(symbol, price, volume)
+    upbit.buy_limit_order(symbol, trg_price, volume)
     print(f"\t >> 매수 주문을 생성했습니다. price: {trg_price} volume: {volume}")
     sleep()
 
