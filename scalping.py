@@ -101,7 +101,7 @@ def sell_order(symbol, price):
     orderbook = pyupbit.get_orderbook(symbol)
     orderbook_units = orderbook['orderbook_units']
 
-    coin_price = get_my_coin_price(symbol)
+    info = get_balance_info(symbol)
 
     for unit in orderbook_units:
         balance_info = get_balance_info(symbol)
@@ -114,7 +114,10 @@ def sell_order(symbol, price):
         trg_price = float(unit["ask_price"])
         volume = price / trg_price
 
-        trg_volume = remain_volume if coin_price < price * 1.2 else volume
+        current_price = pyupbit.get_current_price(symbol)
+        remain_price = float(info["balance"]) * current_price
+
+        trg_volume = remain_volume if remain_price < price * 1.2 else volume
         upbit.sell_limit_order(symbol, trg_price, trg_volume)
         print(f"\t >> 매도 주문을 생성했습니다. price: {trg_price} volume: {trg_volume}")
 
@@ -130,7 +133,8 @@ def cancel_buy_orders(symbol):
 
 
 def get_my_coin_price(symbol):
-    balance = float(upbit.get_balance(symbol))
+    info = get_balance_info(symbol)
+    balance = float(info["balance"]) + float(info["locked"])
     current_price = pyupbit.get_current_price(symbol)
     sleep()
     return balance * current_price
