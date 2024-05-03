@@ -157,13 +157,12 @@ if __name__ == "__main__":
         balance = get_balance_info(symbol)
         not_exists_balance = balance is None
 
-        coin_price = get_my_coin_price(symbol)
+        period = 14
+        rsi = get_rsi(symbol, period)
+        print(f"\t >> 현재 1분봉 {period}분 주기의 RSI: {rsi}")
 
-        if not_exists_balance or coin_price < price_atom * 0.9:
-            print(f"\t >> 보유한 자산이 없거나 적은 코인을 가지고 있습니다. 매수를 시도합니다." + ("" if balance is None else " coin: " + balance["balance"]))
-            period = 14
-            rsi = get_rsi(symbol, period)
-            print(f"\t >> 현재 1분봉 {period}분 주기의 RSI: {rsi}")
+        if not_exists_balance:
+            print(f"\t >> 보유한 자산이 없습니다. 매수를 시도합니다.")
             if rsi > 60:
                 print("\t >> RSI가 60 초과로 매수를 진행하지 않습니다.")
             else:
@@ -173,8 +172,10 @@ if __name__ == "__main__":
             profit_rate = get_profit_rate(symbol)
             print(f"\t >> 현재 수익률: {profit_rate}%")
 
-            if profit_rate < -0.3:
-                print(f"\t >> 수익률이 -0.3% 미만으로 추가 매수를 진행합니다.")
+            coin_price = get_my_coin_price(symbol)
+
+            if profit_rate < -0.3 or (coin_price < 5050 and rsi <= 60):
+                print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다.")
                 buy_order(symbol, price_atom)
             elif profit_rate > 0.3:
                 print(f"\t >> 수익률이 0.3% 이상으로 매도 주문을 진행합니다.")
