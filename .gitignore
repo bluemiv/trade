@@ -47,3 +47,4 @@ pgadmin/
 
 venv
 config.json
+.DS_Store
