@@ -101,10 +101,11 @@ def sell_order(symbol, price):
     orderbook = pyupbit.get_orderbook(symbol)
     orderbook_units = orderbook['orderbook_units']
 
-    balance_info = get_balance_info(symbol)
-    remain_volume = float(balance_info["balance"])
 
     for unit in orderbook_units:
+        balance_info = get_balance_info(symbol)
+        remain_volume = float(balance_info["balance"])
+
         if remain_volume == 0:
             print(f"\t >> 더 이상 생성 가능한 매도 주문이 없습니다.")
             break
@@ -116,7 +117,6 @@ def sell_order(symbol, price):
         upbit.sell_limit_order(symbol, trg_price, trg_volume)
         print(f"\t >> 매도 주문을 생성했습니다. price: {trg_price} volume: {trg_volume}")
 
-        remain_volume = remain_volume - trg_volume
         sleep()
 
 
