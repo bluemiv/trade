@@ -101,6 +101,8 @@ def sell_order(symbol, price):
     orderbook = pyupbit.get_orderbook(symbol)
     orderbook_units = orderbook['orderbook_units']
 
+    coin_price = get_my_coin_price(symbol)
+
     for unit in orderbook_units:
         balance_info = get_balance_info(symbol)
         remain_volume = float(balance_info["balance"])
@@ -112,7 +114,7 @@ def sell_order(symbol, price):
         trg_price = float(unit["ask_price"])
         volume = price / trg_price
 
-        trg_volume = remain_volume if remain_volume < volume else volume
+        trg_volume = remain_volume if coin_price < price * 1.2 else volume
         upbit.sell_limit_order(symbol, trg_price, trg_volume)
         print(f"\t >> 매도 주문을 생성했습니다. price: {trg_price} volume: {trg_volume}")
 
@@ -125,6 +127,13 @@ def cancel_buy_orders(symbol):
     for order in buy_order:
         upbit.cancel_order(order['uuid'])
         sleep()
+
+
+def get_my_coin_price(symbol):
+    balance = float(upbit.get_balance(symbol))
+    current_price = pyupbit.get_current_price(symbol)
+    sleep()
+    return balance * current_price
 
 
 if __name__ == "__main__":
@@ -144,10 +153,14 @@ if __name__ == "__main__":
         print(f"\n[INFO] {symbol} 자동매매를 시작합니다.")
         print(f"\t >> 매수 주문을 초기화합니다.")
         cancel_buy_orders(symbol)
+
         balance = get_balance_info(symbol)
         not_exists_balance = balance is None
-        if not_exists_balance:
-            print("\t >> 보유한 자산이 없습니다. 매수를 시도합니다.")
+
+        coin_price = get_my_coin_price(symbol)
+
+        if not_exists_balance or coin_price < price_atom * 0.9:
+            print(f"\t >> 보유한 자산이 없거나 적은 코인을 가지고 있습니다. 매수를 시도합니다." + ("" if balance is None else balance["balance"]))
             period = 14
             rsi = get_rsi(symbol, period)
             print(f"\t >> 현재 1분봉 {period}분 주기의 RSI: {rsi}")
