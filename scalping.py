@@ -160,7 +160,7 @@ if __name__ == "__main__":
         coin_price = get_my_coin_price(symbol)
 
         if not_exists_balance or coin_price < price_atom * 0.9:
-            print(f"\t >> 보유한 자산이 없거나 적은 코인을 가지고 있습니다. 매수를 시도합니다." + ("" if balance is None else balance["balance"]))
+            print(f"\t >> 보유한 자산이 없거나 적은 코인을 가지고 있습니다. 매수를 시도합니다." + ("" if balance is None else " coin: " + balance["balance"]))
             period = 14
             rsi = get_rsi(symbol, period)
             print(f"\t >> 현재 1분봉 {period}분 주기의 RSI: {rsi}")
