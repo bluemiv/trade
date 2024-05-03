@@ -101,7 +101,6 @@ def sell_order(symbol, price):
     orderbook = pyupbit.get_orderbook(symbol)
     orderbook_units = orderbook['orderbook_units']
 
-
     for unit in orderbook_units:
         balance_info = get_balance_info(symbol)
         remain_volume = float(balance_info["balance"])
