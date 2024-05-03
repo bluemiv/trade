@@ -81,7 +81,7 @@ def buy_order(symbol, price):
     orderbook = pyupbit.get_orderbook(symbol)
     orderbook_units = orderbook['orderbook_units']
     trg_price = float(orderbook_units[0]["bid_price"])
-    volume = math.floor(price / trg_price)
+    volume = price / trg_price
     upbit.buy_limit_order(symbol, price, volume)
     print(f"\t >> 매수 주문을 생성했습니다. price: {trg_price} volume: {volume}")
     sleep()
@@ -110,7 +110,7 @@ def sell_order(symbol, price):
             break
 
         trg_price = float(unit["ask_price"])
-        volume = math.floor(price / trg_price)
+        volume = price / trg_price
 
         trg_volume = remain_volume if remain_volume < volume else volume
         upbit.sell_limit_order(symbol, trg_price, trg_volume)
