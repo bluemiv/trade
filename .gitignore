@@ -44,3 +44,6 @@ pgadmin/
 !.yarn/sdks
 !.yarn/versions
 !.yarn/cache
+
+venv
+config.json

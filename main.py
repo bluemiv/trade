@@ -1,0 +1,167 @@
+# -*- utf-8 -*-
+import math
+import sys
+import os
+import json
+import time
+
+import pyupbit
+
+TRADE_SYMBOL = ["KRW-MATIC"]
+SLEEP_TIME = 0.3
+
+
+def get_config():
+    config_file_path = os.path.join(os.path.dirname(__file__), "config.json")
+    with open(config_file_path, "r", encoding="utf-8") as f:
+        return json.loads(f.read())
+
+
+config = get_config()
+upbit = pyupbit.Upbit(config["access_key"], config["secret_key"])
+
+
+def sleep():
+    time.sleep(SLEEP_TIME)
+
+
+def get_my_total_seed():
+    balances_info = upbit.get_balances()
+    sleep()
+    tickers = pyupbit.get_tickers()
+    total_seed = 0
+    for info in list(filter(lambda x: x["currency"] == "KRW" or "-".join([x["unit_currency"], x["currency"]]) in tickers, balances_info)):
+        if info["currency"] != "KRW":
+            symbol = "-".join([info["unit_currency"], info["currency"]])
+            current_price = pyupbit.get_current_price(symbol)
+            total_seed += (float(info["balance"]) + float(info["locked"])) * current_price
+            continue
+        total_seed += float(info["balance"]) + float(info["locked"])
+    return total_seed
+
+
+def get_my_usable_seed():
+    seed = upbit.get_balance("KRW")
+    sleep()
+    return seed
+
+
+def get_balance_info(symbol):
+    balances_info = upbit.get_balances()
+    sleep()
+    for info in balances_info:
+        cur_symbol = "-".join([info["unit_currency"], info["currency"]])
+        if symbol == cur_symbol:
+            return info
+    return None
+
+
+def get_rsi(symbol, period=14):
+    df = pyupbit.get_ohlcv(symbol, interval="minute1", count=period)
+
+    delta = df['close'].diff()
+
+    gain = delta.where(delta > 0, 0)
+    loss = -delta.where(delta < 0, 0)
+
+    avg_gain = gain.rolling(window=period, min_periods=1).mean()
+    avg_loss = loss.rolling(window=period, min_periods=1).mean()
+
+    rs = avg_gain / avg_loss
+    rsi_list = 100 - (100 / (1 + rs))
+    return rsi_list.iloc[-1]
+
+
+def buy_order(symbol, price):
+    """매수 주문 생성한다."""
+    orderbook = pyupbit.get_orderbook(symbol)
+    orderbook_units = orderbook['orderbook_units']
+    trg_price = float(orderbook_units[0]["bid_price"])
+    volume = math.floor(price / trg_price)
+    upbit.buy_limit_order(symbol, price, volume)
+    print(f"\t >> 매수 주문을 생성했습니다. price: {trg_price} volume: {volume}")
+    sleep()
+
+
+def get_profit_rate(symbol):
+    """수익률을 반환한다."""
+    avg_price = upbit.get_avg_buy_price(symbol)
+    current_price = pyupbit.get_current_price(symbol)
+    profit_rate = (current_price - avg_price) / avg_price * 100
+    sleep()
+    return profit_rate
+
+
+def sell_order(symbol, price):
+    """매도 주문 생성한다."""
+    orderbook = pyupbit.get_orderbook(symbol)
+    orderbook_units = orderbook['orderbook_units']
+
+    balance_info = get_balance_info(symbol)
+    remain_volume = float(balance_info["balance"])
+
+    for unit in orderbook_units:
+        if remain_volume == 0:
+            print(f"\t >> 더 이상 생성 가능한 매도 주문이 없습니다.")
+            break
+
+        trg_price = float(unit["ask_price"])
+        volume = math.floor(price / trg_price)
+
+        trg_volume = remain_volume if remain_volume < volume else volume
+        upbit.sell_limit_order(symbol, trg_price, trg_volume)
+        print(f"\t >> 매도 주문을 생성했습니다. price: {trg_price} volume: {trg_volume}")
+
+        remain_volume = balance - trg_volume
+        sleep()
+
+
+def cancel_buy_orders(symbol):
+    """매수 주문을 모두 취소합니다."""
+    buy_order = list(filter(lambda x: x["side"] == "bid", upbit.get_order(symbol)))
+    for order in buy_order:
+        upbit.cancel_order(order['uuid'])
+        sleep()
+
+
+if __name__ == "__main__":
+    print("[INFO] 프로그램 시작.")
+    total_seed = get_my_total_seed()
+    usable_seed = get_my_usable_seed()
+    print(f"[INFO] 현재 나의 총 자산: {math.floor(total_seed)}원 / 가용 가능한 자산: {math.floor(usable_seed)}원")
+
+    if usable_seed < 5050:
+        print(f"[INFO] 거래 가능한 자산이 없습니다. seed: {usable_seed}")
+        sys.exit()
+
+    price_atom = math.floor(total_seed / 25)
+    print(f"[INFO] 1매수 당 가격: {price_atom}원")
+
+    for symbol in TRADE_SYMBOL:
+        print(f"\n[INFO] {symbol} 자동매매를 시작합니다.")
+        print(f"\t >> 매수 주문을 초기화합니다.")
+        cancel_buy_orders(symbol)
+        balance = get_balance_info(symbol)
+        not_exists_balance = balance is None
+        if not_exists_balance:
+            print("\t >> 보유한 자산이 없습니다. 매수를 시도합니다.")
+            period = 14
+            rsi = get_rsi(symbol, period)
+            print(f"\t >> 현재 1분봉 {period}분 주기의 RSI: {rsi}")
+            if rsi > 60:
+                print("\t >> RSI가 60 초과로 매수를 진행하지 않습니다.")
+            else:
+                print("\t >> RSI가 60 이하이므로 매수를 진행합니다.")
+                buy_order(symbol, price_atom)
+        else:
+            profit_rate = get_profit_rate(symbol)
+            print(f"\t >> 현재 수익률: {profit_rate}%")
+
+            if profit_rate < -0.3:
+                print(f"\t >> 수익률이 -0.3% 미만으로 추가 매수를 진행합니다.")
+                buy_order(symbol, price_atom)
+            elif profit_rate > 0.3:
+                print(f"\t >> 수익률이 0.3% 이상으로 매도 주문을 진행합니다.")
+                sell_order(symbol, price_atom)
+            else:
+                print(f"\t >> 조건에 만족하지 않습니다. 매수/매도 주문을 수행하지 않습니다.")
