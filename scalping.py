@@ -19,10 +19,12 @@ upbit = pyupbit.Upbit(config["access_key"], config["secret_key"])
 
 
 def sleep():
+    """API 호출 금지를 당하지 않도록 sleep을 수행"""
     time.sleep(float(config["sleep_time"]))
 
 
 def get_my_total_seed():
+    """원화, 코인 모든 자산의 평가 금액을 반환한다."""
     balances_info = upbit.get_balances()
     sleep()
     tickers = pyupbit.get_tickers()
@@ -38,12 +40,14 @@ def get_my_total_seed():
 
 
 def get_my_usable_seed():
+    """트레이딩 가용 가능한 자산을 반환한다."""
     seed = upbit.get_balance("KRW")
     sleep()
     return seed
 
 
 def get_balance_info(symbol):
+    """특정 자산 정보를 반환한다."""
     balances_info = upbit.get_balances()
     sleep()
     for info in balances_info:
@@ -54,6 +58,7 @@ def get_balance_info(symbol):
 
 
 def get_rsi(symbol, period=14):
+    """분봉 RSI 값을 반환한다"""
     df = pyupbit.get_ohlcv(symbol, interval="minute1", count=period)
 
     delta = df['close'].diff()
