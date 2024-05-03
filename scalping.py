@@ -29,7 +29,9 @@ def get_my_total_seed():
     sleep()
     tickers = pyupbit.get_tickers()
     total_seed = 0
-    for info in list(filter(lambda x: x["currency"] == "KRW" or "-".join([x["unit_currency"], x["currency"]]) in tickers, balances_info)):
+    for info in list(
+            filter(lambda x: x["currency"] == "KRW" or "-".join([x["unit_currency"], x["currency"]]) in tickers,
+                   balances_info)):
         if info["currency"] != "KRW":
             symbol = "-".join([info["unit_currency"], info["currency"]])
             current_price = pyupbit.get_current_price(symbol)
