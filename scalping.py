@@ -116,7 +116,7 @@ def sell_order(symbol, price):
         upbit.sell_limit_order(symbol, trg_price, trg_volume)
         print(f"\t >> 매도 주문을 생성했습니다. price: {trg_price} volume: {trg_volume}")
 
-        remain_volume = balance - trg_volume
+        remain_volume = remain_volume - trg_volume
         sleep()
 
 
