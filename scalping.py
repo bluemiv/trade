@@ -177,7 +177,7 @@ if __name__ == "__main__":
 
         profit_rate = get_profit_rate(symbol)
         coin_price = get_my_coin_price(symbol)
-        print(f"\t >> 현재 코인 개수: {coin_price} / 수익률: {profit_rate}%")
+        print(f"\t >> 현재 보유한 코인의 원화 가치: {coin_price} / 수익률: {profit_rate}%")
 
         if profit_rate < -0.3 or (coin_price < 5050 and rsi <= 60):
             print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다.")
