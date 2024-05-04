@@ -126,7 +126,8 @@ def sell_order(symbol, price):
 
 def cancel_buy_orders(symbol):
     """매수 주문을 모두 취소합니다."""
-    buy_order = list(filter(lambda x: x["side"] == "bid", upbit.get_order(symbol)))
+    orders = upbit.get_order(symbol)
+    buy_order = list(filter(lambda x: x["side"] == "bid", orders))
     for order in buy_order:
         upbit.cancel_order(order['uuid'])
         sleep()
