@@ -158,12 +158,12 @@ if __name__ == "__main__":
         print(f"\t >> 매수 주문을 초기화합니다.")
         cancel_buy_orders(symbol)
 
-        balance = get_balance_info(symbol)
-        not_exists_balance = balance is None
-
         period = 14
         rsi = get_rsi(symbol, period)
         print(f"\t >> 현재 1분봉 {period}분 주기의 RSI: {rsi}")
+
+        balance = get_balance_info(symbol)
+        not_exists_balance = balance is None
 
         if not_exists_balance:
             print(f"\t >> 보유한 자산이 없습니다. 매수를 시도합니다.")
@@ -172,17 +172,17 @@ if __name__ == "__main__":
             else:
                 print("\t >> RSI가 60 이하이므로 매수를 진행합니다.")
                 buy_order(symbol, price_atom)
+            continue
+
+        profit_rate = get_profit_rate(symbol)
+        coin_price = get_my_coin_price(symbol)
+        print(f"\t >> 현재 코인 개수: {coin_price} / 수익률: {profit_rate}%")
+
+        if profit_rate < -0.3 or (coin_price < 5050 and rsi <= 60):
+            print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다.")
+            buy_order(symbol, price_atom)
+        elif profit_rate > 0.3:
+            print(f"\t >> 수익률이 0.3% 이상으로 매도 주문을 진행합니다.")
+            sell_order(symbol, price_atom)
         else:
-            profit_rate = get_profit_rate(symbol)
-            print(f"\t >> 현재 수익률: {profit_rate}%")
-
-            coin_price = get_my_coin_price(symbol)
-
-            if profit_rate < -0.3 or (coin_price < 5050 and rsi <= 60):
-                print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다.")
-                buy_order(symbol, price_atom)
-            elif profit_rate > 0.3:
-                print(f"\t >> 수익률이 0.3% 이상으로 매도 주문을 진행합니다.")
-                sell_order(symbol, price_atom)
-            else:
-                print(f"\t >> 조건에 만족하지 않습니다. 매수/매도 주문을 수행하지 않습니다.")
+            print(f"\t >> 조건에 만족하지 않습니다. 매수/매도 주문을 수행하지 않습니다.")
