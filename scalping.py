@@ -145,6 +145,7 @@ if __name__ == "__main__":
     print("[INFO] 프로그램 시작.")
     total_seed = get_my_total_seed()
     usable_seed = get_my_usable_seed()
+
     print(f"[INFO] 현재 나의 총 자산: {math.floor(total_seed)}원 / 가용 가능한 자산: {math.floor(usable_seed)}원")
 
     if usable_seed < 5050:
@@ -179,8 +180,11 @@ if __name__ == "__main__":
         coin_price = get_my_coin_price(symbol)
         print(f"\t >> 현재 보유한 코인의 원화 가치: {coin_price} / 수익률: {profit_rate}%")
 
-        if profit_rate < -0.3 or (coin_price < 5050 and rsi <= 60):
-            print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다.")
+        buy_addly_rate = (total_seed - usable_seed) / total_seed
+        buy_rate = -0.3 - buy_addly_rate
+
+        if profit_rate < buy_rate or (coin_price < 5050 and rsi <= 60):
+            print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다. buy rate: {buy_rate}")
             buy_order(symbol, price_atom)
         elif profit_rate > 0.3:
             print(f"\t >> 수익률이 0.3% 이상으로 매도 주문을 진행합니다.")
