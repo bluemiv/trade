@@ -152,7 +152,7 @@ if __name__ == "__main__":
         print(f"[INFO] 거래 가능한 자산이 없습니다. seed: {usable_seed}")
         sys.exit()
 
-    price_atom = math.floor(total_seed / 50)
+    price_atom = math.floor(total_seed / 75)
     print(f"[INFO] 1매수 당 가격: {price_atom}원")
 
     for symbol in config["trade_symbols"]:
