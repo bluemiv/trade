@@ -2,5 +2,6 @@
   "access_key": "",
   "secret_key": "",
   "sleep_time": "0.3",
-  "trade_symbols": []
+  "trade_symbols": [],
+  "seed_divide": 100
 }

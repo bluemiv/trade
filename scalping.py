@@ -8,6 +8,9 @@ import time
 import pyupbit
 
 
+MIN_BUY_PRICE = 5050
+
+
 def get_config():
     config_file_path = os.path.join(os.path.dirname(__file__), "config.json")
     with open(config_file_path, "r", encoding="utf-8") as f:
@@ -148,11 +151,12 @@ if __name__ == "__main__":
 
     print(f"[INFO] 현재 나의 총 자산: {math.floor(total_seed)}원 / 가용 가능한 자산: {math.floor(usable_seed)}원")
 
-    if usable_seed < 5050:
+    if usable_seed < MIN_BUY_PRICE:
         print(f"[INFO] 거래 가능한 자산이 없습니다. seed: {usable_seed}")
         sys.exit()
 
-    price_atom = math.floor(total_seed / 75)
+    seed_divide = float(config["seed_divide"])
+    price_atom = math.floor(total_seed / seed_divide)
     print(f"[INFO] 1매수 당 가격: {price_atom}원")
 
     for symbol in config["trade_symbols"]:
@@ -183,7 +187,7 @@ if __name__ == "__main__":
         buy_addly_rate = (total_seed - usable_seed) / total_seed
         buy_rate = -0.3 - buy_addly_rate
 
-        if profit_rate < buy_rate or (coin_price < 5050 and rsi <= 60):
+        if profit_rate < buy_rate or (coin_price < MIN_BUY_PRICE and rsi <= 60):
             print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다. buy rate: {buy_rate}")
             buy_order(symbol, price_atom)
         elif profit_rate > 0.3:
