@@ -7,7 +7,6 @@ import time
 
 import pyupbit
 
-
 MIN_BUY_PRICE = 5050
 
 
@@ -151,9 +150,7 @@ if __name__ == "__main__":
 
     print(f"[INFO] 현재 나의 총 자산: {math.floor(total_seed)}원 / 가용 가능한 자산: {math.floor(usable_seed)}원")
 
-    if usable_seed < MIN_BUY_PRICE:
-        print(f"[INFO] 거래 가능한 자산이 없습니다. seed: {usable_seed}")
-        sys.exit()
+    is_enable_buy = usable_seed > MIN_BUY_PRICE
 
     seed_divide = float(config["seed_divide"])
     price_atom = math.floor(total_seed / seed_divide)
@@ -168,16 +165,12 @@ if __name__ == "__main__":
         rsi = get_rsi(symbol, period)
         print(f"\t >> 현재 1분봉 {period}분 주기의 RSI: {rsi}")
 
+        # 1. 첫 매수
         balance = get_balance_info(symbol)
         not_exists_balance = balance is None
-
-        if not_exists_balance:
-            print(f"\t >> 보유한 자산이 없습니다. 매수를 시도합니다.")
-            if rsi > 60:
-                print("\t >> RSI가 60 초과로 매수를 진행하지 않습니다.")
-            else:
-                print("\t >> RSI가 60 이하이므로 매수를 진행합니다.")
-                buy_order(symbol, price_atom)
+        if not_exists_balance and rsi <= 60 and is_enable_buy:
+            print("\t >> 보유한 자산이 없고, RSI가 60 이하이므로 첫 매수를 진행합니다.")
+            buy_order(symbol, price_atom)
             continue
 
         profit_rate = get_profit_rate(symbol)
@@ -185,13 +178,13 @@ if __name__ == "__main__":
         print(f"\t >> 현재 보유한 코인의 원화 가치: {coin_price} / 수익률: {profit_rate}%")
 
         buy_addly_rate = (total_seed - usable_seed) / total_seed
-        buy_rate = -0.3 - buy_addly_rate
+        add_buy_rate = -0.3 - buy_addly_rate
 
-        if profit_rate < buy_rate or (coin_price < MIN_BUY_PRICE and rsi <= 60):
-            print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다. buy rate: {buy_rate}")
+        # 2. 추가 매수
+        if (profit_rate < add_buy_rate or (coin_price < MIN_BUY_PRICE and rsi <= 60)) and is_enable_buy:
+            print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다. buy rate: {add_buy_rate}")
             buy_order(symbol, price_atom)
-        elif profit_rate > 0.3:
+
+        if profit_rate >= 0.3:
             print(f"\t >> 수익률이 0.3% 이상으로 매도 주문을 진행합니다.")
             sell_order(symbol, price_atom)
-        else:
-            print(f"\t >> 조건에 만족하지 않습니다. 매수/매도 주문을 수행하지 않습니다.")
