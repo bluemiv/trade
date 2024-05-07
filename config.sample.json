@@ -3,5 +3,5 @@
   "secret_key": "",
   "sleep_time": "0.3",
   "trade_symbols": [],
-  "seed_divide": 100
+  "seed_divide": 150
 }
