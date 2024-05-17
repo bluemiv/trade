@@ -119,7 +119,7 @@ def sell_order(symbol, price):
         current_price = pyupbit.get_current_price(symbol)
         remain_price = float(info["balance"]) * current_price
 
-        trg_volume = remain_volume if remain_price < price * 1.2 else volume
+        trg_volume = remain_volume if remain_price < price * 1.5 else volume
         upbit.sell_limit_order(symbol, trg_price, trg_volume)
         print(f"\t >> 매도 주문을 생성했습니다. price: {trg_price} volume: {trg_volume}")
 
