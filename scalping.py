@@ -168,9 +168,10 @@ if __name__ == "__main__":
         # 1. 첫 매수
         balance = get_balance_info(symbol)
         not_exists_balance = balance is None
-        if not_exists_balance and rsi <= 60 and is_enable_buy:
-            print("\t >> 보유한 자산이 없고, RSI가 60 이하이므로 첫 매수를 진행합니다.")
-            buy_order(symbol, price_atom)
+        if not_exists_balance:
+            if rsi <= 60 and is_enable_buy:
+                print("\t >> 보유한 자산이 없고, RSI가 60 이하이므로 첫 매수를 진행합니다.")
+                buy_order(symbol, price_atom)
             continue
 
         profit_rate = get_profit_rate(symbol)
