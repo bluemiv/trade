@@ -175,6 +175,7 @@ if __name__ == "__main__":
 
     seed_divide = float(config["seed_divide"])
     price_atom = math.floor(total_seed / seed_divide)
+    price_atom = price_atom if price_atom > 5050 else 5050
     print(f"[INFO] 1매수 당 가격: {price_atom}원")
 
     for symbol in config["trade_symbols"]:
