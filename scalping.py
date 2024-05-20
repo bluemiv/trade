@@ -1,6 +1,5 @@
 # -*- utf-8 -*-
 import math
-import sys
 import os
 import json
 import time
@@ -126,11 +125,33 @@ def sell_order(symbol, price):
         sleep()
 
 
+def get_duplicate_price(orders):
+    visited = {}
+    results = []
+    for order in orders:
+        if order["side"] != "ask":
+            continue
+
+        price = order["price"]
+        if visited.get(price, None) is not None:
+            results.append(order)
+            continue
+
+        visited[price] = True
+
+    return results
+
+
 def cancel_buy_orders(symbol):
     """매수 주문을 모두 취소합니다."""
     orders = upbit.get_order(symbol)
+
+    sell_order = get_duplicate_price(orders)
     buy_order = list(filter(lambda x: x["side"] == "bid", orders))
+    buy_order.extend(sell_order)
+
     for order in buy_order:
+        print(f"\t >> {order['side']}/{order['uuid']} 주문 취소")
         upbit.cancel_order(order['uuid'])
         sleep()
 
