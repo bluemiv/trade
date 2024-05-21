@@ -118,7 +118,7 @@ def sell_order(symbol, price):
         current_price = pyupbit.get_current_price(symbol)
         remain_price = float(info["balance"]) * current_price
 
-        trg_volume = remain_volume if remain_price < price * 1.5 else volume
+        trg_volume = remain_volume if remain_price < price * 2 else volume
         upbit.sell_limit_order(symbol, trg_price, trg_volume)
         print(f"\t >> 매도 주문을 생성했습니다. price: {trg_price} volume: {trg_volume}")
 
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 
     seed_divide = float(config["seed_divide"])
     price_atom = math.floor(total_seed / seed_divide)
-    price_atom = price_atom if price_atom > 5050 else 5050
+    price_atom = price_atom if price_atom > MIN_BUY_PRICE else MIN_BUY_PRICE
     print(f"[INFO] 1매수 당 가격: {price_atom}원")
 
     for symbol in config["trade_symbols"]:
@@ -208,6 +208,6 @@ if __name__ == "__main__":
             print(f"\t >> 추가 매수 조건에 충족하여 매수를 진행합니다. buy rate: {add_buy_rate}")
             buy_order(symbol, price_atom)
 
-        if profit_rate >= 0.3:
+        if profit_rate >= 0.3 and coin_price >= MIN_BUY_PRICE:
             print(f"\t >> 수익률이 0.3% 이상으로 매도 주문을 진행합니다.")
             sell_order(symbol, price_atom)
