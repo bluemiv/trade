@@ -60,21 +60,26 @@ def get_balance_info(symbol):
     return None
 
 
-def get_rsi(symbol, period=14):
-    """분봉 RSI 값을 반환한다"""
-    df = pyupbit.get_ohlcv(symbol, interval="minute1", count=period)
+def get_rsi(symbol, interval='minute1', period=14):
+    """
+    RSI 값을 반환한다.
+    - day/minute1/minute3/minute5/minute10/minute15/minute30/minute60/minute240/week/month
+    - (일봉/1분봉/3분봉/5분봉/10분봉/15분봉/30분봉/60분봉/240분봉/주봉/월봉)
+    """
+    df = pyupbit.get_ohlcv(symbol, interval=interval, count=250)
 
     delta = df['close'].diff()
+    delta = delta[1:]
 
-    gain = delta.where(delta > 0, 0)
-    loss = -delta.where(delta < 0, 0)
+    gain = delta.clip(lower=0)
+    loss = delta.clip(upper=0).abs()
 
-    avg_gain = gain.rolling(window=period, min_periods=1).mean()
-    avg_loss = loss.rolling(window=period, min_periods=1).mean()
+    avg_gain = gain.ewm(alpha=1 / period).mean()
+    avg_loss = loss.ewm(alpha=1 / period).mean()
 
     rs = avg_gain / avg_loss
-    rsi_list = 100 - (100 / (1 + rs))
-    return rsi_list.iloc[-1]
+    rsi = 100.0 - (100.0 / (1.0 + rs))
+    return rsi[-1]
 
 
 def buy_order(symbol, price):
