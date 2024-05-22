@@ -79,7 +79,7 @@ def get_rsi(symbol, interval='minute1', period=14):
 
     rs = avg_gain / avg_loss
     rsi = 100.0 - (100.0 / (1.0 + rs))
-    return rsi[-1]
+    return rsi.iloc[-1]
 
 
 def buy_order(symbol, price):
