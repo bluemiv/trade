@@ -3,5 +3,5 @@
   "secret_key": "",
   "sleep_time": "0.3",
   "trade_symbols": ["KRW-STX","KRW-MATIC","KRW-MINA","KRW-MNT","KRW-CELO","KRW-SUI","KRW-SAND","KRW-MANA","KRW-FLOW","KRW-BLUR"],
-  "seed_divide": 350
+  "seed_divide": 400
 }
