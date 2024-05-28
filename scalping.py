@@ -37,8 +37,10 @@ def get_my_total_seed():
             symbol = "-".join([info["unit_currency"], info["currency"]])
             current_price = pyupbit.get_current_price(symbol)
             total_seed += (float(info["balance"]) + float(info["locked"])) * current_price
+            sleep()
             continue
         total_seed += float(info["balance"]) + float(info["locked"])
+
     return total_seed
 
 
