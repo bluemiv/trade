@@ -46,5 +46,6 @@ pgadmin/
 !.yarn/cache
 
 venv
-config.json
 .DS_Store
+
+*.config.json
