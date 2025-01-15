@@ -109,7 +109,6 @@ class BybitHelper:
                 timeInForce="PostOnly",
                 positionIdx=1  # Hedge mode
             )
-            print(f" >> [INFO] 주문 접수 완료: Long {qty} @ {price}")
         except Exception as e:
             print(f" >> [ERROR] 주문 접수 실패: Long {qty} @ {price} / err: {e}")
 

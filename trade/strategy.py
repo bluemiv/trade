@@ -25,6 +25,7 @@ class TradeStrategy:
                     print(" >> [ERROR] Orderbook에서 진입할 금액 정보를 가져오지 못함")
                     continue
                 helper.place_order(symbol, entry_price, qty)
+                print(f" >> [INFO] 첫 진입 완료: Long {qty} @ {entry_price}")
 
             position = helper.get_position_info(symbol)
             if position is None:
@@ -47,6 +48,7 @@ class TradeStrategy:
                         print(" >> [ERROR] Orderbook에서 진입할 금액 정보를 가져오지 못함")
                         continue
                     helper.place_order(symbol, entry_price, next_qty)
+                    print(f" >> [INFO] 추가 진입 완료: Long {next_qty} @ {entry_price}")
                     break
 
             # 급등해서 TP 설정 전에 TP 이상 오르면 주문 접수가 안됨. 그때는 5%씩 올려서 TP 설정.
