@@ -47,6 +47,7 @@ class TradeStrategy:
                     if entry_price is None:
                         print(" >> [ERROR] Orderbook에서 진입할 금액 정보를 가져오지 못함")
                         continue
+                    print(f" >> [DEBUG] 매수 양이 {additional_base_amount * i} 미만이고, 수익률이 {-10 * (i + 1)}% 만족하여 추가 진입 시도")
                     helper.place_order(symbol, entry_price, next_qty)
                     print(f" >> [INFO] 추가 진입 완료: Long {next_qty} @ {entry_price}")
                     break
