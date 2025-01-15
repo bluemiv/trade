@@ -41,7 +41,7 @@ class BybitHelper:
             self.sleep()
             return orderbook
         except Exception as e:
-            print(f"[ERROR] Orderbook 조회 실패: {e}")
+            print(f" >> [ERROR] Orderbook 조회 실패: {e}")
             return None
 
     def get_entry_qty(self, symbol):
@@ -75,7 +75,7 @@ class BybitHelper:
                     return position
             return None
         except Exception as e:
-            print(f"[ERROR] 포지션 조회 실패: {e}")
+            print(f" >> [ERROR] 포지션 조회 실패: {e}")
             return None
 
     def get_market_entry_price(self, symbol):
@@ -109,9 +109,9 @@ class BybitHelper:
                 timeInForce="PostOnly",
                 positionIdx=1  # Hedge mode
             )
-            print(f"[INFO] 주문 접수 완료: Long {qty} @ {price}")
+            print(f" >> [INFO] 주문 접수 완료: Long {qty} @ {price}")
         except Exception as e:
-            print(f"[ERROR] 주문 접수 실패: Long {qty} @ {price} / err: {e}")
+            print(f" >> [ERROR] 주문 접수 실패: Long {qty} @ {price} / err: {e}")
 
     def sleep(self):
         """딜레이"""
