@@ -10,4 +10,4 @@ RUN pip install --no-cache-dir -U -r requirements.txt
 
 COPY . /home/service/
 
-CMD ["python3", "loop_infinite_trade.py"]
+CMD ["python3", "-u", "loop_infinite_trade.py"]
