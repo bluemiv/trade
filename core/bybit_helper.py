@@ -131,12 +131,23 @@ class BybitHelper:
         return entry_price * (1 + profit_ratio)
 
     def set_take_profit(self, symbol, take_profit):
-        self.client.set_trading_stop(
-            category="linear",
-            symbol=symbol,
-            takeProfit=str(take_profit),
-            tpTriggerBy="MarkPrice",
-            tpslMode="Full",
-            positionIdx=1,  # Hedge Mode
-        )
-        print(f" >> [INFO] TP 설정 완료: {take_profit}")
+        """TP를 설정한다.
+
+        :param symbol: 대상 symbol
+        :param take_profit: 설정할 TP 값
+        :return: 설정 성공하면 True 반환. 실패하면 False 반환
+        """
+        try:
+            self.client.set_trading_stop(
+                category="linear",
+                symbol=symbol,
+                takeProfit=str(take_profit),
+                tpTriggerBy="MarkPrice",
+                tpslMode="Full",
+                positionIdx=1,  # Hedge Mode
+            )
+            print(f" >> [INFO] TP 설정 완료: {take_profit}")
+            return True
+        except Exception as e:
+            print(f" >> [ERROR] TP 설정 실패: {e}")
+            return False

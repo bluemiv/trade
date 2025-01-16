@@ -1,8 +1,8 @@
 {
   "api_key": "",
   "api_secret": "",
-  "sleep_time": 0.4,
-  "price": 33000,
+  "sleep_time": 0.35,
+  "price": 35300,
   "exchange": 1400,
   "targets": [
     "10000000AIDOGEUSDT",
@@ -102,6 +102,26 @@
     "1000PEPEUSDT",
     "PNUTUSDT",
     "PENGUUSDT",
-    "BRETTUSDT"
+    "BRETTUSDT",
+    "1000BONKUSDT",
+    "GRASSUSDT",
+    "JTOUSDT",
+    "ORCAUSDT",
+    "EOSUSDT",
+    "ONTUSDT",
+    "VETUSDT",
+    "NEOUSDT",
+    "XMRUSDT",
+    "EGLDUSDT",
+    "ZECUSDT",
+    "ZILUSDT",
+    "COREUSDT",
+    "DASHUSDT",
+    "STRKUSDT",
+    "MANTAUSDT",
+    "THETAUSDT",
+    "ALICEUSDT",
+    "ALGOUSDT",
+    "BCHUSDT"
   ]
 }
