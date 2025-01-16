@@ -53,7 +53,7 @@ class TradeStrategy:
                     break
 
             # 급등해서 TP 설정 전에 TP 이상 오르면 주문 접수가 안됨. 그때는 5%씩 올려서 TP 설정.
-            for i in range(6):
+            for i in range(10):
                 percent = 0.1 + (i * 0.05)
                 take_profit = helper.get_take_profit(avg_price, percent / leverage)
                 print(f" >> [INFO] TP 설정. {percent}% / 설정 금액: {take_profit}")

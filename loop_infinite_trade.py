@@ -4,7 +4,7 @@ from trade.strategy import TradeStrategy
 from utils.decorator import loop_decorator
 
 
-@loop_decorator(loop_time=2 * 60)
+@loop_decorator(loop_time=1)
 def main():
     TradeStrategy.infinit()
 
