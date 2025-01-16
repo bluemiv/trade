@@ -5,7 +5,7 @@ pgadmin/
 # compiled output
 **/dist
 **/build
-**/*.pyc
+**/__pycache__
 
 # Logs
 **/logs
