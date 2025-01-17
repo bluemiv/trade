@@ -90,7 +90,7 @@ class BybitHelper:
             return best_bid
         return None
 
-    def place_order(self, symbol, price, qty):
+    def place_order(self, symbol, side, price, qty):
         """
         Long 주문 접수
         :param symbol: 대상 symbol
@@ -102,15 +102,17 @@ class BybitHelper:
             self.client.place_order(
                 category="linear",
                 symbol=symbol,
-                side="Buy",
+                side=side, # "Buy", "Sell"
                 orderType="Limit",
                 qty=qty,
                 price=price,
                 timeInForce="PostOnly",
                 positionIdx=1  # Hedge mode
             )
+            return True
         except Exception as e:
             print(f" >> [ERROR] 주문 접수 실패: Long {qty} @ {price} / err: {e}")
+            return False
 
     def sleep(self):
         """딜레이"""
@@ -126,7 +128,7 @@ class BybitHelper:
         """
         return (((mark_price - entry_price) / entry_price) * leverage) * 100
 
-    def get_take_profit(self, entry_price, profit_ratio):
+    def get_take_profit_price(self, entry_price, profit_ratio):
         """TP 가격 반환"""
         return entry_price * (1 + profit_ratio)
 

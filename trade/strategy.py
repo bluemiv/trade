@@ -24,7 +24,7 @@ class TradeStrategy:
                 if entry_price is None:
                     print(" >> [ERROR] Orderbook에서 진입할 금액 정보를 가져오지 못함")
                     continue
-                helper.place_order(symbol, entry_price, qty)
+                helper.place_order(symbol, "Buy", entry_price, qty)
                 print(f" >> [INFO] 첫 진입 완료: Long {qty} @ {entry_price}")
 
             position = helper.get_position_info(symbol)
@@ -47,19 +47,32 @@ class TradeStrategy:
                     if entry_price is None:
                         print(" >> [ERROR] Orderbook에서 진입할 금액 정보를 가져오지 못함")
                         continue
-                    print(f" >> [DEBUG] 진입한 qty가 {additional_base_amount * i} 이하이고, 수익률이 {-10 * (i + 1)}% 이하 만족하여 추가 진입 시도")
-                    helper.place_order(symbol, entry_price, next_qty)
+                    print(
+                        f" >> [DEBUG] 진입한 qty가 {additional_base_amount * i} 이하이고, 수익률이 {-10 * (i + 1)}% 이하 만족하여 추가 진입 시도")
+                    helper.place_order(symbol, "Buy", entry_price, next_qty)
                     print(f" >> [INFO] 추가 진입 완료: Long {next_qty} @ {entry_price}")
                     break
 
             # 급등해서 TP 설정 전에 TP 이상 오르면 주문 접수가 안됨. 그때는 5%씩 올려서 TP 설정.
             for i in range(10):
                 percent = 0.1 + (i * 0.05)
-                take_profit = helper.get_take_profit(avg_price, percent / leverage)
-                print(f" >> [INFO] TP 설정. {percent}% / 설정 금액: {take_profit}")
-                is_success = helper.set_take_profit(symbol, take_profit)
-                if is_success:
+
+                position = helper.get_position_info(symbol)
+                total_qty = float(position["size"])
+                avg_price = float(position["avgPrice"])
+
+                take_profit_price = helper.get_take_profit_price(avg_price, percent / leverage)
+
+                # 지정가 매도 설정 시도
+                print(f" >> [INFO] 포지션 종료 지정가 설정. {percent}% / 설정 금액: {take_profit_price}")
+                if helper.place_order(symbol, "Sell", take_profit_price, total_qty):
                     break
                 else:
-                    print(f" >> [WARN] TP 설정 실패. 다음 퍼센트 값으로 설정 시도.")
-                    helper.sleep()
+                    # 지정가 매도 실패하면 TP 설정 시도
+                    print(f" >> [INFO] 지정가 설정 실패하여, TP 설정. {percent}% / 설정 금액: {take_profit_price}")
+                    if helper.set_take_profit(symbol, take_profit_price):
+                        break
+                    else:
+                        # TP 설정 실패하면 profit 5% 올려서 다시 시도
+                        print(f" >> [WARN] TP 설정 실패. 다음 퍼센트 값으로 설정 시도.")
+                        helper.sleep()

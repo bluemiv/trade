@@ -1,8 +1,8 @@
 {
   "api_key": "",
   "api_secret": "",
-  "sleep_time": 0.35,
-  "price": 35300,
+  "sleep_time": 0.4,
+  "price": 50000,
   "exchange": 1400,
   "targets": [
     "10000000AIDOGEUSDT",
