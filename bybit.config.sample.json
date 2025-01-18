@@ -2,7 +2,7 @@
   "api_key": "",
   "api_secret": "",
   "sleep_time": 0.4,
-  "price": 50000,
+  "price": 70000,
   "exchange": 1400,
   "targets": [
     "10000000AIDOGEUSDT",
@@ -88,8 +88,6 @@
     "WIFUSDT",
     "WLDUSDT",
     "WUSDT",
-    "XLMUSDT",
-    "XRPUSDT",
     "XTZUSDT",
     "ZETAUSDT",
     "ZRCUSDT",
@@ -121,6 +119,13 @@
     "MANTAUSDT",
     "THETAUSDT",
     "ALICEUSDT",
-    "ALGOUSDT"
+    "ALGOUSDT",
+    "SOLUSDT",
+    "KASUSDT",
+    "ONEUSDT",
+    "MOODENGUSDT",
+    "BOMEUSDT",
+    "ENAUSDT",
+    "LDOUSDT"
   ]
 }
