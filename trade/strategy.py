@@ -10,14 +10,14 @@ class TradeStrategy:
         bybit_config = get_config()["bybit"]
         helper = BybitHelper(config=bybit_config)
         symbols = helper.get_target_symbols()
-        helper.get_max_entry_price(len(symbols))
+        krw = helper.get_max_entry_price(len(symbols))
 
         for symbol in symbols:
             print(f"-*-*- {symbol} 매매 시작 -*-*-")
 
             helper.cancel_all_orders(symbol)
 
-            qty, next_qty = helper.get_entry_qty(symbol)
+            qty, next_qty = helper.get_entry_qty(symbol, krw)
             print(f" >> [DEBUG] 첫 진입 개수: {qty}, 추가 진입 개수: {next_qty}")
 
             position = helper.get_position_info(symbol)

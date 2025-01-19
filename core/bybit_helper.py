@@ -8,7 +8,7 @@ class BybitHelper:
     def __init__(self, config):
         self.client = HTTP(api_key=config["api_key"], api_secret=config["api_secret"])
         self.sleep_time = config["sleep_time"]
-        self.price = config["price"]
+        self.price = config.get("price")
         self.exchange = config["exchange"]
         self.targets = config["targets"]
 
@@ -44,9 +44,10 @@ class BybitHelper:
             print(f" >> [ERROR] Orderbook 조회 실패: {e}")
             return None
 
-    def get_entry_qty(self, symbol):
+    def get_entry_qty(self, symbol, krw):
         """입력받은 symbol의 진입할 코인 개수를 반환한다.
         :param symbol: 대상 symbol
+        :param krw: 진입할 금액
         :return: (첫번째 진입 개수, 이후 추가 진입 개수)
         """
 
@@ -57,11 +58,14 @@ class BybitHelper:
         if not orderbook:
             return 0, 0
 
-        price = float(orderbook["result"]["b"][0][0])
-        dollar = self.price / self.exchange
+        coin_price = float(orderbook["result"]["b"][0][0])
+        price = int(krw if self.price is None else self.price)
+        if self.price is None:
+            print(f" >> [DEBUG] 설정된 진입 금액이 없어, 자동으로 금액 설정. 진입 금액: {price}원")
+        dollar = price / self.exchange
         dollar = dollar if dollar > 5.5 else 5.5
         half_dollar = (dollar / 2) if (dollar / 2) > 5.5 else 5.5
-        return get_valid_amount(dollar / price), get_valid_amount(half_dollar / price)
+        return get_valid_amount(dollar / coin_price), get_valid_amount(half_dollar / coin_price)
 
     def get_position_info(self, symbol):
         """현재 포지션 정보를 반환한다.
