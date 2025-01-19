@@ -52,7 +52,7 @@ class BybitHelper:
         """
 
         def get_valid_amount(amount):
-            return int(amount * 10) / 10 if amount <= 5 else int(amount)
+            return int(amount * 10) / 10 if amount <= 3 else int(amount)
 
         orderbook = self.get_orderbook(symbol)
         if not orderbook:

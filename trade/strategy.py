@@ -51,8 +51,8 @@ class TradeStrategy:
                         continue
                     print(
                         f" >> [DEBUG] 진입한 qty가 {additional_base_amount * i} 이하이고, 수익률이 {-10 * (i + 1)}% 이하 만족하여 추가 진입 시도")
-                    helper.place_order(symbol, "Buy", entry_price, next_qty)
-                    print(f" >> [INFO] 추가 진입 완료: Long {next_qty} @ {entry_price}")
+                    if not helper.place_order(symbol, "Buy", entry_price, next_qty):
+                        print(f" >> [ERROR] 추가 진입 실패: Long {next_qty} @ {entry_price}")
                     break
 
             # 지정가 매도 설정 시도
