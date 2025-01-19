@@ -66,7 +66,7 @@ class TradeStrategy:
             helper.sleep()
 
             # 급등해서 매도 설정 안되면 TP로 판매하기 위한 방어로직
-            for i in range(1, 10):
+            for i in range(1, 5):
                 percent = 0.1 + (i * 0.05)
                 take_profit_price = helper.get_take_profit_price(avg_price, percent / leverage)
                 print(f" >> [INFO] TP 설정. {percent}% / 설정 금액: {take_profit_price}")
