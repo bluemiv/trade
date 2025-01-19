@@ -9,8 +9,10 @@ class TradeStrategy:
     def infinit(cls):
         bybit_config = get_config()["bybit"]
         helper = BybitHelper(config=bybit_config)
+        symbols = helper.get_target_symbols()
+        helper.get_max_entry_price(len(symbols))
 
-        for symbol in helper.get_target_symbols():
+        for symbol in symbols:
             print(f"-*-*- {symbol} 매매 시작 -*-*-")
 
             helper.cancel_all_orders(symbol)
@@ -53,26 +55,24 @@ class TradeStrategy:
                     print(f" >> [INFO] 추가 진입 완료: Long {next_qty} @ {entry_price}")
                     break
 
-            # 급등해서 TP 설정 전에 TP 이상 오르면 주문 접수가 안됨. 그때는 5%씩 올려서 TP 설정.
-            for i in range(10):
+            # 지정가 매도 설정 시도
+            percent = 0.1
+            position = helper.get_position_info(symbol)
+            total_qty = float(position["size"])
+            avg_price = float(position["avgPrice"])
+            take_profit_price = helper.get_take_profit_price(avg_price, percent / leverage)
+            print(f" >> [INFO] 포지션 종료 지정가 설정. {percent}% / 설정 금액: {take_profit_price}")
+            helper.place_order(symbol, "Sell", take_profit_price, total_qty)
+            helper.sleep()
+
+            # 급등해서 매도 설정 안되면 TP로 판매하기 위한 방어로직
+            for i in range(1, 10):
                 percent = 0.1 + (i * 0.05)
-
-                position = helper.get_position_info(symbol)
-                total_qty = float(position["size"])
-                avg_price = float(position["avgPrice"])
-
                 take_profit_price = helper.get_take_profit_price(avg_price, percent / leverage)
-
-                # 지정가 매도 설정 시도
-                print(f" >> [INFO] 포지션 종료 지정가 설정. {percent}% / 설정 금액: {take_profit_price}")
-                if helper.place_order(symbol, "Sell", take_profit_price, total_qty):
+                print(f" >> [INFO] TP 설정. {percent}% / 설정 금액: {take_profit_price}")
+                if helper.set_take_profit(symbol, take_profit_price):
                     break
                 else:
-                    # 지정가 매도 실패하면 TP 설정 시도
-                    print(f" >> [INFO] 지정가 설정 실패하여, TP 설정. {percent}% / 설정 금액: {take_profit_price}")
-                    if helper.set_take_profit(symbol, take_profit_price):
-                        break
-                    else:
-                        # TP 설정 실패하면 profit 5% 올려서 다시 시도
-                        print(f" >> [WARN] TP 설정 실패. 다음 퍼센트 값으로 설정 시도.")
-                        helper.sleep()
+                    # TP 설정 실패하면 profit 5% 올려서 다시 시도
+                    print(f" >> [WARN] TP 설정 실패. 다음 퍼센트 값으로 설정 시도.")
+                    helper.sleep()

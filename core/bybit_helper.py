@@ -51,7 +51,7 @@ class BybitHelper:
         """
 
         def get_valid_amount(amount):
-            return int(amount * 10) / 10 if amount <= 3 else int(amount)
+            return int(amount * 10) / 10 if amount <= 5 else int(amount)
 
         orderbook = self.get_orderbook(symbol)
         if not orderbook:
@@ -59,8 +59,9 @@ class BybitHelper:
 
         price = float(orderbook["result"]["b"][0][0])
         dollar = self.price / self.exchange
-        amount = dollar / price
-        return get_valid_amount(amount), get_valid_amount(amount / 2)
+        dollar = dollar if dollar > 5.5 else 5.5
+        half_dollar = (dollar / 2) if (dollar / 2) > 5.5 else 5.5
+        return get_valid_amount(dollar / price), get_valid_amount(half_dollar / price)
 
     def get_position_info(self, symbol):
         """현재 포지션 정보를 반환한다.
@@ -102,7 +103,7 @@ class BybitHelper:
             self.client.place_order(
                 category="linear",
                 symbol=symbol,
-                side=side, # "Buy", "Sell"
+                side=side,  # "Buy", "Sell"
                 orderType="Limit",
                 qty=qty,
                 price=price,
@@ -153,3 +154,15 @@ class BybitHelper:
         except Exception as e:
             print(f" >> [ERROR] TP 설정 실패: {e}")
             return False
+
+    def get_max_entry_price(self, coin_len):
+        try:
+            wallet_balance = self.client.get_wallet_balance(accountType="UNIFIED")
+            wallet = list(filter(lambda x: x["accountType"] == "UNIFIED", wallet_balance["result"]["list"]))[0]
+            usdt = float(wallet["totalEquity"]) / coin_len * 2
+            krw = usdt * self.exchange
+            print(f" >> [INFO] 최대 권장 금액: {usdt} USD / {krw} KRW")
+            self.sleep()
+            return krw
+        except Exception as e:
+            print(f" >> [ERROR] 자산 조회 실패: {e}")
