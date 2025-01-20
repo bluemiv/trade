@@ -163,7 +163,7 @@ class BybitHelper:
         try:
             wallet_balance = self.client.get_wallet_balance(accountType="UNIFIED")
             wallet = list(filter(lambda x: x["accountType"] == "UNIFIED", wallet_balance["result"]["list"]))[0]
-            usdt = float(wallet["totalEquity"]) / coin_len * 2
+            usdt = float(wallet["totalEquity"]) / coin_len * 1.5
             krw = usdt * self.exchange
             print(f" >> [INFO] 최대 권장 금액: {usdt} USD / {krw} KRW")
             self.sleep()
